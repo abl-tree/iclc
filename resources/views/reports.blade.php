@@ -78,28 +78,24 @@
             </div>
           </form><br>
             <table class="table table-hover table-bordered" id="sampleTable">
-                  <thead>
-                    <tr>
-                      <th>ID #</th>
-                      <th>Name</th>
-                      <th>Year</th>
-                      <th>Course</th>
-                      <th>Amount Paid</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @if(!empty($students))
-                      @foreach($students as $student)
-                      <tr>
-                        <td> {{$student->Student_No}} </td>
-                        <td> {{$student->Student_Name}} </td>
-                        <td> {{$student->Year}} </td>
-                        <td> {{$student->Course}} </td>
-                        <td> {{$student->status}} </td>
-                      </tr>
-                      @endforeach
-                    @endif 
-                  </tbody>
+                <thead>
+                  <tr>
+                    <th>ID #</th>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>Course</th>
+                    <th>Amount Paid</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>ID #</th>
+                    <th>Name</th>
+                    <th>Year</th>
+                    <th>Course</th>
+                    <th>Amount Paid</th>
+                  </tr>
+                </tfoot>
             </table>
           </div>
         </div>
@@ -110,6 +106,33 @@
 @endsection
 
 @section("js")
+  <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
+  <script type="text/javascript">
+      $('#sampleTable').DataTable({
+        "ajax": "/reportslist",
+        initComplete: function () {
+            this.api().columns().every( function () {
+                var column = this;
+                var select = $('<select><option value=""></option></select>')
+                    .appendTo( $(column.footer()).empty() )
+                    .on( 'change', function () {
+                        var val = $.fn.dataTable.util.escapeRegex(
+                            $(this).val()
+                        );
+ 
+                        column
+                            .search( val ? '^'+val+'$' : '', true, false )
+                            .draw();
+                    } );
+ 
+                column.data().unique().sort().each( function ( d, j ) {
+                    select.append( '<option value="'+d+'">'+d+'</option>' )
+                } );
+            } );
+        }
+      });
+  </script>
   <script language="javascript">
   $(document).ready(function(){
     var filter = "All/All/All/All";

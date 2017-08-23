@@ -35,24 +35,18 @@
         <div class="card">
           <div class="card-body">
             <table class="table table-hover table-bordered" id="sampleTable">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Position</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @if(!empty($cashiers))
-                      @foreach($cashiers as $cashier)
-                      <tr>
-                        <td> {{$cashier->name}} </td>
-                        <td> {{$cashier->position}} </td>
-                        <td>active</td>
-                      </tr>
-                      @endforeach
-                    @endif 
-                  </tbody>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Position</th>
+                  </tr>
+                </tfoot>
             </table>
           </div>
         </div>
@@ -65,5 +59,7 @@
 @section('js')
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
-<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<script type="text/javascript">$('#sampleTable').DataTable({
+    "ajax": "/cashierlists"
+});</script>
 @endsection

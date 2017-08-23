@@ -46,6 +46,11 @@ class HomeController extends Controller
 
     public function student()
     {
+        return view('data-table');
+    }
+
+    public function student_list()
+    {
         $payment = 0;
         //join balance and student information table;
         $payments = DB::table('item_lists')
@@ -61,22 +66,70 @@ class HomeController extends Controller
 
         $users = DB::select("select b.*, coalesce($overallamount - sum(total), $overallamount) as 'status' from payments_table a right join
                 (select * from students) b on a.stud_id = b.Student_no group by student_no;");
+        
+        foreach ($users as $key => $value) {
+            $data[$key][] = $users[$key]->Student_No;
+            $data[$key][] = $users[$key]->Student_Name;
+            $data[$key][] = $users[$key]->Gender;
+            $data[$key][] = $users[$key]->Year;
+            $data[$key][] = $users[$key]->Course;
+            $data[$key][] = $users[$key]->status;
+        }
 
-        return view('data-table', ['students' => $users]);
+        $table_data = array(
+            "draw" => 1,
+            "recordsTotal" => count($data),
+            "recordsFiltered" => count($data),
+            'data' => $data, 
+            );
+
+        echo json_encode($table_data);
     }
 
-    public function cashier()
-    {
+    public function cashier(){
+        return view('cashier-data');
+    }
+
+    public function cashier_list(){
         $users = DB::select('select * from users');
 
-        return view('cashier-data', ['cashiers' => $users]);
+        foreach ($users as $key => $value) {
+            $data[$key][] = $users[$key]->name;
+            $data[$key][] = $users[$key]->position;
+        }
+
+        $table_data = array(
+            "draw" => 1,
+            "recordsTotal" => count($data),
+            "recordsFiltered" => count($data),
+            'data' => $data, 
+            );
+
+        echo json_encode($table_data);
     }
 
     public function item()
     {
+        return view('items');
+    }
+
+    public function item_lists(){        
         $items = DB::select('select * from item_lists');
 
-        return view('items', ['items' => $items]);
+        foreach ($items as $key => $value) {
+            $data[$key][] = $items[$key]->name;
+            $data[$key][] = $items[$key]->price;
+            $data[$key][] = $items[$key]->status;
+        }
+
+        $table_data = array(
+            "draw" => 1,
+            "recordsTotal" => count($data),
+            "recordsFiltered" => count($data),
+            'data' => $data, 
+            );
+
+        echo json_encode($table_data);
     }
 
     public function accountUpdate(Request $request)
@@ -590,6 +643,31 @@ public function data_checker($year, $sem, $acadyear, $course)
         $academic_years = DB::select('select * from academic_year');
 
         return view('reports', ['students' => $users, 'yearlevels' => $year, 'courses' => $course, 'items' => $items, 'academic_years' => $academic_years]);
+    }
+
+    public function report_list()
+    {
+        $overallamount = 0;
+
+        $users = DB::select("select b.*, coalesce($overallamount + sum(total), $overallamount) as 'status' from payments_table a right join
+                (select * from students) b on a.stud_id = b.Student_no group by student_no;");
+        
+        foreach ($users as $key => $value) {
+            $data[$key][] = $users[$key]->Student_No;
+            $data[$key][] = $users[$key]->Student_Name;
+            $data[$key][] = $users[$key]->Year;
+            $data[$key][] = $users[$key]->Course;
+            $data[$key][] = $users[$key]->status;
+        }
+
+        $table_data = array(
+            "draw" => 1,
+            "recordsTotal" => count($data),
+            "recordsFiltered" => count($data),
+            'data' => $data, 
+            );
+
+        echo json_encode($table_data);
     }
 
     public function filter($year = null, $sem = null, $acadyear = null, $course = null)

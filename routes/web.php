@@ -33,7 +33,9 @@ Route::get('/student', 'HomeController@student') -> name('students');
 Route::get('/student/transaction/{id}', 'HomeController@transaction');
 Route::get('/student/{id?}', 'HomeController@transaction');
 Route::get('/cashiers', 'HomeController@cashier') -> name('cashiers');
+Route::get('/cashierlists', 'HomeController@cashier_list');
 Route::get('/items', 'HomeController@item') -> name('items');
+Route::get('/itemlists', 'HomeController@item_lists');
 Route::get('/create', 'HomeController@add_student') -> name('add-student');
 Route::get('/update', 'HomeController@update_student') -> name('update-student');
 Route::get('/stats', 'HomeController@pie_graph');
@@ -63,6 +65,7 @@ Route::post('postcontact/{opt}/{or}','HomeController@postContact')->name('email'
 
 //pdf
 Route::get('/reports', 'HomeController@query') -> name('reports');
+Route::get('/reportslist', 'HomeController@report_list');
 Route::get('/reports/filter/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@filter') -> name('filter');
 Route::get('/reports/csv/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@csv') -> name('csv');
 Route::get('/reports/pdf/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@pdf') -> name('pdf');
@@ -73,3 +76,5 @@ Route::get('sendtest', function(){
 		$message->to('lamparasallen@gmail.com');
 	});
 });
+
+Route::get('/studentlist', 'HomeController@student_list');

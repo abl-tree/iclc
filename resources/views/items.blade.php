@@ -35,24 +35,20 @@
         <div class="card">
           <div class="card-body">
             <table class="table table-hover table-bordered" id="sampleTable">
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Amount</th>
-                      <th>Status</th>
-                    </tr>
-                  </thead>
-                  <tbody id="item-table">
-                    @if(!empty($items))
-                      @foreach($items as $item)
-                      <tr>
-                        <td> {{$item->name}} </td>
-                        <td> {{$item->price}} </td>
-                        <td> {{$item->status}} </td>
-                      </tr>
-                      @endforeach
-                    @endif 
-                  </tbody>
+                <thead>
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </thead>
+                <tfoot>
+                  <tr>
+                    <th>Name</th>
+                    <th>Amount</th>
+                    <th>Status</th>
+                  </tr>
+                </tfoot>
             </table>
           </div>
         </div>
@@ -220,7 +216,9 @@
 @section('js')
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
-<script type="text/javascript">$('#sampleTable').DataTable();</script>
+<script type="text/javascript">$('#sampleTable').DataTable({
+  'ajax': '/itemlists'
+});</script>
 <script type="text/javascript">
 
   // --Begin-- Items' Modal Functions
