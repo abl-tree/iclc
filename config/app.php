@@ -177,8 +177,6 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
-        SammyK\LaravelFacebookSdk\LaravelFacebookSdkServiceProvider::class,
-        'Thujohn\Twitter\TwitterServiceProvider',
         Barryvdh\DomPDF\ServiceProvider::class,
 
     ],
@@ -229,8 +227,6 @@ return [
         'URL' => Illuminate\Support\Facades\URL::class,
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
-        //'Facebook' => SammyK\LaravelFacebookSdk\FacebookFacade::class,
-        'Twitter' => 'Thujohn\Twitter\Facades\Twitter',
         'PDF' => Barryvdh\DomPDF\Facade::class,
 
     ],
