@@ -59,8 +59,6 @@ class HomeController extends Controller
 
         $overallamount = $payment*2*sizeof($ay);
 
-        echo json_encode($overallamount);
-
         $users = DB::select("select b.*, coalesce($overallamount - sum(total), $overallamount) as 'status' from payments_table a right join
                 (select * from students) b on a.stud_id = b.Student_no group by student_no;");
 
@@ -155,7 +153,6 @@ class HomeController extends Controller
         ->update($item);
 
         $items = DB::select('select * from item_lists');
-        echo json_encode($items);
     }
     
     public function deleteItem(Request $request)
@@ -170,7 +167,6 @@ class HomeController extends Controller
         DB::delete('delete from item_lists where name = ?',[$request->itemName]);
 
         $items = DB::select('select * from item_lists');
-        echo json_encode($items);
 
     }
 
@@ -200,7 +196,6 @@ class HomeController extends Controller
         ->insert($student);
 
         $students = DB::select('select * from students');
-        echo json_encode($students);
 
 
         
@@ -224,11 +219,10 @@ class HomeController extends Controller
                   ];
 
         DB::table('students')
-        ->where('Student_Name', $request->studName)
+        ->where('Student_No', $request->studNum)
         ->update($student);
 
         $students = DB::select('select * from students');
-        echo json_encode($students);
     }   
 
     public function deleteStudent(Request $request)
@@ -243,7 +237,6 @@ class HomeController extends Controller
         DB::delete('delete from students where Student_No = ?',[$request->studNum]);
 
         $students = DB::select('select * from students');
-        echo json_encode($students);
 
     }
 
@@ -307,9 +300,6 @@ class HomeController extends Controller
 
             $balance = DB::table('payments_table')
             ->where([['stud_id', '=', $id], ['academic_year', '=', $acad_year], ['semester', '=', $semester]])->get();
-
-            // $balance = DB::table('payments_table')
-            // ->where([['stud_id', '=', $id], ['academic_year', '=', $ayget], ['semester', '=', $sem]])->get();
 
             for($x=0; $x<sizeof($payments); $x++){
                 $new_payment = $new_payment + (float)$payments[$x]->price;
@@ -375,7 +365,6 @@ class HomeController extends Controller
 
                 DB::table('optional_records')
                 ->insert($tmp);    
-                echo json_encode($request->academicYear);
             }
         }else{            
             $payments = DB::table('item_lists')
@@ -397,11 +386,7 @@ class HomeController extends Controller
 
             DB::table('payments_table')
             ->insert($payment);
-
-            echo json_encode($request->academicYear);
         }
-
-        // echo json_encode($tmp);
     }
 
     /* Used to calculate number of students
@@ -554,29 +539,10 @@ class HomeController extends Controller
     }
 
 public function postContact(Request $request, $options = null, $or = null){
-    // $data = Twitter::getUserTimeline(['user_id' => $provider, 'format' => 'array']);
-    // $this->pdf = PDF::loadView('pdf',compact('data'));
-
     $this->validate($request,[
         'email'=>'required|email']);
 
-    //echo json_encode($request->email . " dsadsda " . $options. " dsadsda " . $or);
-    return $this->or_pdf($options, $or);
-
-    // $datani=array(
-    //     'email'=>$request->email,
-    //     'subject'=>$request->subject,
-    //     'bodyMessage'=>$request->message);
-
-    // Mail::send('email',$datani,function($message)use($datani){        
-        
-    //     $message->from('iclocalcouncil@gmail.com','ICLC');
-    //     $message->to($datani['email']);
-    //    // $message->attachData($this->pdf->output(),'twitter.pdf');
-    //     $message->subject($datani['subject']);
-
-    // }); 
-    // Session::flash('Success',' Message was sent!');
+    return $this->or_pdf($options, $or, $request->email);
 }
 
 public function tempFilter($sem = null, $acadyear = null, $id = null){
@@ -634,20 +600,17 @@ public function data_checker($year, $sem, $acadyear, $course)
 
     public function csv($year = null, $sem = null, $acadyear = null, $course = null)
     {   
-            $mad = new HomeController;
-            $data = $mad->data_checker($year, $sem, $acadyear, $course);
+            $data = $this->data_checker($year, $sem, $acadyear, $course);
             $data = json_decode(json_encode($data), true);
 
-            print_r($data);
-            // Excel::create('ICLC_Report', function($excel) use ($data){
-            //     $excel->sheet('Sheet 1', function($sheet) use ($data) {
-            //         $sheet->fromArray($data);
-            //     });
-            // })->export('xls');
+            Excel::create('ICLC_Report', function($excel) use ($data){
+                $excel->sheet('Sheet 1', function($sheet) use ($data){
+                    $sheet->fromArray($data);
+                });
+            })->download();
     }
 
-    public function or_pdf($or = null, $options = null) {
-
+    public function or_pdf($or = null, $options = null, $email) {
 
         if($options == "mandatory"){
                 $paymentshistory = DB::table('payments_table')
@@ -720,8 +683,22 @@ public function data_checker($year, $sem, $acadyear, $course)
             }
 
         $data = [$records, 'accounts' => $accounts, 'data' => $arrPayment];
+
         $pdf = PDF::loadView('template.receipt', compact('data'));
-        return $pdf->download($filename);
+
+        $datani=array(
+        'email'=>$email,
+        'subject'=>"ICLC Payment",
+        'bodyMessage'=>"Good bless you");
+
+        Mail::send('email',$datani,function($message)use($datani,$pdf){        
+            
+            $message->from('iclocalcouncil@gmail.com','ICLC');
+            $message->to($datani['email']);
+            $message->attachData($pdf->output(),'report.pdf');
+            $message->subject("ICLC REPORT");
+
+        }); 
     }
 
     public function pdf($year = null, $sem = null, $acadyear = null, $course = null)
@@ -730,5 +707,4 @@ public function data_checker($year, $sem, $acadyear, $course)
         $pdf = PDF::loadView('pdfReport', compact('data'));
         return $pdf->stream("ICLC_Report.pdf");
     }
-
 }

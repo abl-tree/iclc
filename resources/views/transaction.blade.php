@@ -50,7 +50,6 @@
                     @endforeach
                   @endif
                   <option>Add</option>
-                  <option>Add</option>
                 </select>
               </div>    
               <div class="clearfix"></div>
@@ -279,7 +278,7 @@ $("#cashamount").on("input", function(){
   }
 });
 
-$("select[name='academicYear']").change(function(){
+$("select[name='academicYear']").click(function(){
   if(this.value == "Add"){
     $("#acad_year_modal").modal("show");
   }else{    

@@ -226,9 +226,6 @@
                 </div>
               </div>
         
-            
-               
-              
           </div>
       </div>
       <div class="modal-footer">
@@ -313,7 +310,7 @@ $('#delete-student-form').submit(function(e){
             type:"success"},
             function(){
                 $('#delete_student').modal("hide");
-                $('#dynamic').load("/students");
+                $('#dynamic').load("/student");
             });
           },  
           error: function(e) {

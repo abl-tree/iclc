@@ -40,6 +40,7 @@ Route::get('/stats', 'HomeController@pie_graph');
 Route::post('/acadyear','HomeController@acadYear');
 
 Route::get('/temp/{semster}/{acadyear}/{id}','HomeController@tempFilter');
+Route::get('/stud/{semster}/{acadyear}/{id}','StudentController@tempFilter');
 
 //Route::get('/register', 'HomeController@index') -> name('twitter');
 
@@ -49,8 +50,8 @@ Route::get('/error', function(){
   return view('error_layout.error');
 });
 
-Route::get('/', function (SammyK\LaravelFacebookSdk\LaravelFacebookSdk $fb) {
-  return redirect('/login');
+Route::get('/', function () {
+	return redirect('/login');
 });
 
 // Route::get('/pdf', 'PDFController@index');
@@ -65,3 +66,10 @@ Route::get('/reports', 'HomeController@query') -> name('reports');
 Route::get('/reports/filter/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@filter') -> name('filter');
 Route::get('/reports/csv/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@csv') -> name('csv');
 Route::get('/reports/pdf/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@pdf') -> name('pdf');
+
+Route::get('sendtest', function(){
+	Mail::raw('Sending emails with Mailgun and Laravel is easy!', function($message)
+	{
+		$message->to('lamparasallen@gmail.com');
+	});
+});

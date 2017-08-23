@@ -188,40 +188,40 @@
           </div>
           <div class="row invoice-info">              
             <div class="col-xs-4">
-                <b>Official Receipt # @if($data['accounts'][0]->status == "Optional") OP @endif {{ $data[0]['OR'] }} </b><br><br>
-                <b>Name:</b> {{ $data[0]['Name'] }}<br><b>AY:</b> {{ $data[0]['academic_year'] }}<br><b>Semester:</b> {{ $data[0]['Semester'] }}<br>
-                <b>Course:</b> {{ $data[0]['Course'] }}<br><b>Year:</b> {{ $data[0]['Year'] }}
-            </div>                
-            <div class="col-xs-4">
-            </div>                   
-            <div class="col-xs-4">Received by :
-              <address><strong>ICLC {{ $data[0]['Cashier'] }}</strong></address>
+                <b>Official Receipt # {{ $data[0]['OR'] }} </b><br><br>
+                <b>Name:</b> {{ $data[0]['Name'] }}<br><b>Semester:</b> {{ $data[0]['Semester'] }}<br>
+                <b>Course:</b> {{ $data[0]['Course'] }}<br><b>Year:</b> {{ $data[0]['Year'] }}<br><br>
+            </div> 
+          </div>
+          <div class="row">
+            <div class="col-xs-12 table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Qty</th>
+                    <th>Accounts</th>
+                    <th>Amount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @if(!empty($data['accounts']))
+                    @foreach($data['accounts'] as $index=>$account)
+                  <tr>
+                    <td>1</td>
+                    <td>{{$account->name}}</td>
+                    <td>{{$data['data'][$index]['payment']}}</td>
+                  </tr>
+                    @endforeach
+                  @endif
+                </tbody>
+              </table>
             </div>
           </div>
           <div class="row">
-              <div class="col-xs-12 table-responsive">
-                <table class="table table-striped">
-                  <thead>
-                    <tr>
-                      <!-- <th>Qty</th> -->
-                      <th>Accounts</th>
-                      <th>Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    @if(!empty($data['accounts']))
-                      @foreach($data['accounts'] as $index=>$account)
-                    <tr>
-                      <!-- <td>1</td> -->
-                      <td>{{$account->name}}</td>
-                      <td>{{$data['data'][$index]['payment']}}</td>
-                    </tr>
-                      @endforeach
-                    @endif
-                  </tbody>
-                </table>
-              </div>
+            <div class="col-xs-12">
+              <h3 style="margin-right: 20%; float: right;"><b>Received by:</b><br><br>ICLC {{ $data[0]['Cashier'] }}</h3>
             </div>
+          </div>
         </section>
       </div>
     </div>

@@ -9,7 +9,7 @@
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/search.css') }}"> -->
 
-    <title>Vali Admin</title>
+    <title>ICLC Payment System</title>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries-->
     <!--if lt IE 9
     script(src='https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js')
@@ -27,7 +27,7 @@
                       <th>Name</th>
                       <th>Year</th>
                       <th>Course</th>
-                      <th>Status</th>
+                      <th>Total</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -38,7 +38,7 @@
                         <td> {{$student->Student_Name}} </td>
                         <td> {{$student->Year}} </td>
                         <td> {{$student->Course}} </td>
-                        <td> Unpaid </td>
+                        <td> {{$student->status}} </td>
                       </tr>
                       @endforeach
                     @endif 

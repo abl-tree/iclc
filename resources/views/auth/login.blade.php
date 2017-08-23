@@ -8,7 +8,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>ICLC Pay-4-Less</title>
+    <title>ICLC System</title>
 
     <!-- Styles -->
     <link href="{{ asset('css/search.css') }}" rel="stylesheet">
@@ -26,8 +26,9 @@
       <div class="cover"></div>
     </section>
     <section class="login-content">
-      <div class="logo">
-        <h1>ICLC Pay-4-Less</h1>
+     <div>
+        <h1 style="color: white; text-align: : left; font-size: 100px; font-family: Arial Black, Gadget, sans-serif  ">ICLC</h1><hr>  
+           <h1 style="color: white; text-align: : left">Payment System</h1>
       </div>
       <div class="login-box">
         <form class="login-form" role="form" method="POST" action="{{ route('login') }}">

@@ -154,8 +154,8 @@
       $.ajax({
         type: "GET",
         url: "/reports/csv/" + filter,
-        success: function(data){                   
-          $('#csv').loadingBtnComplete({ html : '<i class="fa fa-lg fa-table"></i>'});
+        success: function(data){                 
+          window.location.href=this.url;  
         },  
         error: function(e) {
           swal({
@@ -166,6 +166,8 @@
             location.reload();
           });
         }
+      }).done(function(){        
+          $('#csv').loadingBtnComplete({ html : '<i class="fa fa-lg fa-table"></i>'});
       });
     });
 
