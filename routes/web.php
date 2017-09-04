@@ -14,8 +14,36 @@
 
 Auth::routes();
 
+//student_controller
+Route::get('/student', 'Student_Controller@index') -> name('students');
+Route::post('/student/{option?}', 'Student_Controller@student');
+Route::get('/studentlist', 'Student_Controller@student_list');
+Route::get('/student/search', 'Student_Controller@search_by_id');
+
+//course_controller
+Route::post('/course/{option?}', 'Course_Controller@course');
+
+//item_controller
+Route::get('/items', 'Item_Controller@index') -> name('items');
+Route::post('/item/{option?}', 'Item_Controller@item');
+Route::get('/itemlist', 'Item_Controller@item_list');
+
+//semester_controller
+Route::post('/semester/{option?}', 'Semester_Controller@semester');
+
+//department_controller
+Route::post('/department/{option?}', 'Department_Controller@department');
+
+//transaction_controller
+Route::get('/transaction', 'Transaction_Controller@index') -> name('transaction');
+Route::get('/transaction/{option?}', 'Transaction_Controller@transaction');
+Route::post('/transaction/{option?}', 'Transaction_Controller@transaction');
+
+Route::get('/test', function(){
+	echo Auth::user();
+});
+
 Route::get('/home', 'HomeController@index') -> name('home');
-Route::get('/transaction', 'HomeController@transaction') -> name('transaction');
 Route::get('/edit', 'HomeController@edit') -> name('edit');
 //student
 Route::post('/students/add', 'HomeController@addStudent');
@@ -29,12 +57,10 @@ Route::post('/items/add', 'HomeController@addItem');
 Route::post('/items/delete', 'HomeController@deleteItem');
 Route::post('/items/update', 'HomeController@updateItem');
 Route::post('/account', 'HomeController@accountUpdate') -> name('account');
-Route::get('/student', 'HomeController@student') -> name('students');
 Route::get('/student/transaction/{id}', 'HomeController@transaction');
 Route::get('/student/{id?}', 'HomeController@transaction');
 Route::get('/cashiers', 'HomeController@cashier') -> name('cashiers');
 Route::get('/cashierlists', 'HomeController@cashier_list');
-Route::get('/items', 'HomeController@item') -> name('items');
 Route::get('/itemlists', 'HomeController@item_lists');
 Route::get('/create', 'HomeController@add_student') -> name('add-student');
 Route::get('/update', 'HomeController@update_student') -> name('update-student');
@@ -76,5 +102,3 @@ Route::get('sendtest', function(){
 		$message->to('lamparasallen@gmail.com');
 	});
 });
-
-Route::get('/studentlist', 'HomeController@student_list');

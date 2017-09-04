@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class ItemLists extends Migration
+class Semester extends Migration
 {
     /**
      * Run the migrations.
@@ -12,13 +12,11 @@ class ItemLists extends Migration
      * @return void
      */
     public function up()
-    {        
-        Schema::create('item_lists', function (Blueprint $table) {
+    {
+        if(!Schema::hasTable('semester'))
+        Schema::create('semester', function(Blueprint $table){
             $table->increments('id');
-            $table->string('name')->unique();
-            $table->float('price', 8, 2);
-            $table->string('status');
-            $table->timestamps();
+            $table->string('description')->unique();
         });
     }
 
@@ -29,6 +27,6 @@ class ItemLists extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('item_lists');
+        Schema::dropIfExists('semester');
     }
 }

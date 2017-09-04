@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateFbUsersTable extends Migration
+class Course extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,11 @@ class CreateFbUsersTable extends Migration
      */
     public function up()
     {
-        Schema::create('fb_users', function (Blueprint $table) {
+        if(!Schema::hasTable('course'))
+        Schema::create('course', function (Blueprint $table) {
             $table->increments('id');
-            $table->string('facebook_id');
             $table->string('name');
-            $table->string('email');
-            $table->rememberToken();
-            $table->timestamps();
-        });
+        });    
     }
 
     /**
@@ -30,6 +27,6 @@ class CreateFbUsersTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('fb_users');
+        Schema::dropIfExists('course');
     }
 }
