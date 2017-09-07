@@ -39,6 +39,10 @@ Route::get('/transaction', 'Transaction_Controller@index') -> name('transaction'
 Route::get('/transaction/{option?}', 'Transaction_Controller@transaction');
 Route::post('/transaction/{option?}', 'Transaction_Controller@transaction');
 
+//cashier_controller
+Route::get('/cashier', 'Cashier_Controller@index') -> name('cashiers');
+Route::get('/cashier/{option?}', 'Cashier_Controller@cashier');
+
 Route::get('/test', function(){
 	echo Auth::user();
 });
@@ -59,8 +63,6 @@ Route::post('/items/update', 'HomeController@updateItem');
 Route::post('/account', 'HomeController@accountUpdate') -> name('account');
 Route::get('/student/transaction/{id}', 'HomeController@transaction');
 Route::get('/student/{id?}', 'HomeController@transaction');
-Route::get('/cashiers', 'HomeController@cashier') -> name('cashiers');
-Route::get('/cashierlists', 'HomeController@cashier_list');
 Route::get('/itemlists', 'HomeController@item_lists');
 Route::get('/create', 'HomeController@add_student') -> name('add-student');
 Route::get('/update', 'HomeController@update_student') -> name('update-student');

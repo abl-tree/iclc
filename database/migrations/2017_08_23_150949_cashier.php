@@ -19,6 +19,7 @@ class Cashier extends Migration
             $table->string('first_name');
             $table->string('last_name');
             $table->string('email')->nullable();
+            $table->string('position');
             $table->string('username');
             $table->foreign('username')->references('username')->on('users');
             $table->integer('user_id')->unsigned();

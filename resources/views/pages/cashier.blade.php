@@ -60,6 +60,6 @@
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
 <script type="text/javascript">$('#sampleTable').DataTable({
-    "ajax": "/cashierlists"
+    "ajax": "/cashier/list"
 });</script>
 @endsection
