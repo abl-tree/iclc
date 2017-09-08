@@ -132,12 +132,12 @@
                 <div class="col-md-9">
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="1" required>Optional
+                      <input type="radio" name="itemStatus" id="itemStatus" value="0" required>Optional
                     </label>
                   </div>
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="2" required>Mandatory
+                      <input type="radio" name="itemStatus" id="itemStatus" value="1" required>Mandatory
                     </label>
                   </div>
                 </div>
@@ -171,8 +171,6 @@
       <div class="modal-body">
           <div class="card-body">
               {{ csrf_field() }}
-
-              
               <div class="form-group{{ $errors->has('itemName') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Name</label>
                 <div class="col-md-8">
@@ -190,12 +188,12 @@
                 <div class="col-md-9">
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="Optional"  required>Optional
+                      <input type="radio" name="itemStatus" id="itemStatus" value="0"  required>Optional
                     </label>
                   </div>
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="Mandatory" required>Mandatory
+                      <input type="radio" name="itemStatus" id="itemStatus" value="1" required>Mandatory
                     </label>
                   </div>
                 </div>

@@ -384,7 +384,8 @@
         data: $(this).serialize(),
         url: '/transaction/payment',
         success: function(data){
-          $('input[name="total-amount"]').val(data.item - data.payment);
+          console.log(data);
+          $('input[name="total-amount"]').val(data);
         },
         error: function(){
           $('input[name="total-amount"]').val('');
@@ -412,7 +413,7 @@
       var cash = parseFloat($('input[name="cash-amount"]').val());
       var payment_details = $(this).serialize()+'&'+stud_info;
 
-      if($('input[name="student-id"]').val() && total <= cash){
+      if($('input[name="student-id"]').val()){
         $.ajax({
           url: 'transaction/confirm',
           method: 'post',
@@ -429,14 +430,6 @@
               });
           }
         });
-      }else if($('input[name="student-id"]').val() && total > cash){
-        $.notify({
-            title: "Error : ",
-            message: "Not enough cash amount.",
-            icon: 'fa fa-check' 
-          },{
-            type: "warning"
-          });
       }else{
         $.notify({
             title: "Error : ",

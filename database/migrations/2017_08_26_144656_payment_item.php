@@ -20,9 +20,9 @@ class PaymentItem extends Migration
             $table->foreign('payment_id')->references('id')->on('payment');
             $table->integer('item_id')->unsigned();
             $table->foreign('item_id')->references('id')->on('item');
-            $table->integer('quantity')->unsigned();
-            $table->string('size');
-            $table->decimal('amount', 9, 2)->unsigned();
+            $table->integer('quantity')->unsigned()->default(1);
+            $table->string('size')->nullable();
+            $table->decimal('amount', 22, 15)->unsigned();
         });
     }
 
