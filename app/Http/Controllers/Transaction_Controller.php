@@ -16,7 +16,13 @@ class Transaction_Controller extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+            if($this->user->role !== 'client'){
+                return redirect('/unauthorized');
+            }
+            return $next($request);
+        });
     }
 
     /**
@@ -80,7 +86,12 @@ class Transaction_Controller extends Controller
                 $percentage += $balance[$key]['balance'];
             }
 
-            echo json_encode($percentage);
+            $data = array(
+                'balance' => $percentage,
+                'link' => '/transaction/history?student-id='.$data['student_id'].'&semester='.$data['semester_id'].'&academicYear='.$data['sy_id'].'&studentID='.$data['student_number']
+                );
+
+            echo json_encode($data);
         }else if($option === 'confirm'){  
             $this->validate($request, [
                 'cash-amount' => 'required|max:255',
@@ -160,6 +171,37 @@ class Transaction_Controller extends Controller
             ->insert($result);
 
             echo json_encode($insert);
+        }else if($option === "history"){
+            $data = [
+                'sy_id' => $request->academicYear,
+                'semester_id' => $request->semester,
+                'student_id' => $request['student-id'],
+                'student_number' => $request->studentID
+                ];
+            $list = array(
+                'receipt' => DB::table('payment')
+                ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id'], 'student_id'=>$data['student_id']])
+                ->get(), 
+                );
+
+            foreach ($list['receipt'] as $key => $value) {
+                $result[$key][] = $value->invoice_number;
+                $result[$key][] = $value->created_date;
+                $result[$key][] = $value->sy_id;
+                $result[$key][] = $value->semester_id;
+                $result[$key][] = $value->total_amount;
+                $result[$key][] = $value->cashier_id;
+                $result[$key][] = $value->id;
+            }
+
+            $table_data = array(
+                "draw" => 1,
+                "recordsTotal" => count($result),
+                "recordsFiltered" => count($result),
+                'data' => $result, 
+                );
+
+            echo json_encode($table_data);
         }
     }
 }

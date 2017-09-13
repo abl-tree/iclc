@@ -32,8 +32,35 @@
     </div>
     <div class="row">
       <div class="col-md-12">
-        <div class="card">
+        <div class="card">  
           <div class="card-body">
+            <form id="upload" action="/student/upload" method="post" enctype="multipart/form-data">
+
+              {{ csrf_field() }}
+              <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="reset" title="Reset">
+                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;reset&quot;)">
+                    <span class="fa fa-refresh"></span>
+                  </span>
+                </button>
+                <label class="btn btn-primary btn-upload" for="inputImage" title="Upload excel file">
+                  <input type="file" class="sr-only" id="inputImage" name="file" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="Upload excel file">
+                    <span class="fa fa-upload"></span>
+                  </span>
+                </label>
+                <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
+                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;destroy&quot;)">
+                    <span class="fa fa-power-off"></span>
+                  </span>
+                </button>
+              </div>
+            </form>
+            <div class="btn-group">
+              <button type="submit" data-toggle="modal" data-target=".delete_student" class="btn btn-warning" data-id="1">
+              <i class="fa fa-lg fa-trash"></i></button>
+            </div>
+            </br>
             <table class="table table-hover table-bordered" id="sampleTable" style="width: 100%;">
                 <thead>
                   <tr>
@@ -153,7 +180,7 @@
 
 <!-- Update Item Modal -->
 
-<div id="update_student" class="modal fade">
+<div id="update_student" class="modal fade update_student">
   <div class="modal-dialog">
     <div class="modal-content">      
       <form class="form-horizontal" id="update-student-form" role="form">    
@@ -164,7 +191,7 @@
       <div class="modal-body">
           <div class="card-body">
               {{ csrf_field() }}
-
+              <input type="hidden" name="student_id">
               <div class="form-group{{ $errors->has('studNum') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Student No.</label>
                 <div class="col-md-8">
@@ -190,11 +217,16 @@
                     <option>Add</option>
                   </select>
                 </div>
-              </div>    
-              <div class="form-group{{ $errors->has('studYear') ? ' has-error' : '' }}">
-                <label class="control-label col-md-3">Year</label>
+              </div>
+              <div class="form-group{{ $errors->has('update_studYear') ? ' has-error' : '' }}">       
+                <label class="control-label col-md-3">Year</label>         
                 <div class="col-md-8">
-                  <input class="form-control" type="text" placeholder="Enter Student Year" id="studYear" name="studYear" value="{{ old('studYear') }}" required>
+                  <select class="form-control report" type="text" name="update_studYear" required>
+                    <option value="1">1st Year</option>
+                    <option value="2">2nd Year</option>
+                    <option value="3">3rd Year</option>
+                    <option value="4">4th Year</option>
+                  </select>
                 </div>
               </div>
               <div class="form-group{{ $errors->has('studGender') ? ' has-error' : '' }}">
@@ -229,7 +261,7 @@
 </div> 
 <!-- Delete Item Modal -->
 
-<div id="delete_student" class="modal fade">
+<div id="delete_student" class="modal fade delete_student">
   <div class="modal-dialog">
     <div class="modal-content">      
       <form class="form-horizontal" id="delete-student-form" role="form">    
@@ -307,6 +339,8 @@
 </script>
 <script>
 $(document).ready(function(){
+
+    $('[data-toggle="tooltip"]').tooltip();  
   $('#sampleTable').DataTable({
     "ajax": "/studentlist",    
     "columnDefs": [
@@ -314,7 +348,25 @@ $(document).ready(function(){
             "targets": [ 0 ],
             "visible": false,
             "searchable": false
-        }
+        },
+        // {
+        //   "targets": [ 4 ],
+        //   createdCell: function(td, cellData, rowData, row, col){
+        //     var a = $(td).find(">:first-child");
+        //     var delete_button = $(a.children()[1]);
+        //     delete_button.attr('id', 'delete-button');
+        //     // a.attr("data-id", rowData[0]);
+        //     // a.attr("data-target", '.purchase-modal');
+        //     // a.attr("data-toggle", 'modal');
+        //     // a.attr("type", 'submit');
+        //     $('#delete-button').click(function(){
+        //       alert('dsadsadsa');
+        //     });
+        //   },
+        //   render: function ( data, type, row, meta ) {
+        //     return data;
+        //   }
+        // }
     ],
     // createdRow: function( row, data, dataIndex ) {
     //     $( row ).attr("onclick", "window.location.href = 'student/transaction/"+data[0]+"'");
@@ -426,23 +478,32 @@ $('#delete-student-form').submit(function(e){
     }
   });
 
-  // $('#course_modal').on('hidden.bs.modal', function(e){
-  //   // $('select[name="studCourse"]').val('');
-  // })
+  $('.update_student').on('shown.bs.modal', function(e){
+    // $('select[name="studCourse"]').val('');
+    var id = $(e.relatedTarget).data('id');
+    var url = "/student/"+id;
 
-  // --Begin-- Students' Modal Functions
-    $('#add-student-button').click(function(){
-      $('#add_student').modal("show");
+    $.getJSON(url, function(data){
+      console.log(data);
+      $('input[name="student_id"]').val(data[0].id);
+      $('input[name="studNum"]').val(data[0].student_number);
+      $('input[name="studName"]').val(data[0].first_name+" "+data[0].last_name);
+      $('select[name="studCourse"]').val(data[0].course_id);
+      $('select[name="update_studYear"]').val(data[0].year);
     });
+  })
 
-    $('#update-student-button').click(function(){
-      $('#update_student').modal("show");
-    });
+  $('.update_student').on('hidden.bs.modal', function(e){
+      $('input[name="student_id"]').val('');
+      $('input[name="studNum"]').val('');
+      $('input[name="studName"]').val('');
+      $('select[name="studCourse"]').val(1);
+      $('select[name="update_studYear"]').val(1);
+  })
 
-    $('#delete-student-button').click(function(){
-      $('#delete_student').modal("show");
-    });
-  // --End-- Students' Modal Functions
+  $('input[name="file"]').change(function(){
+    $('#upload').submit();
+  });
 
 });
 </script>

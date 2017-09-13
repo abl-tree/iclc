@@ -273,6 +273,7 @@
 <script>
   $(document).ready(function(){
     var stud_info = '';
+    var table = $('#payment-history').DataTable();
 
     $('#add-acadyear-form').submit(function(e){
       e.preventDefault();
@@ -384,8 +385,9 @@
         data: $(this).serialize(),
         url: '/transaction/payment',
         success: function(data){
-          console.log(data);
-          $('input[name="total-amount"]').val(data);
+          console.log(table);
+          table.ajax.url(data.link).load();
+          $('input[name="total-amount"]').val(data.balance);
         },
         error: function(){
           $('input[name="total-amount"]').val('');
@@ -440,8 +442,6 @@
           });
       }
     });
-
-    $('#payment-history').DataTable();
 
   });
 </script>

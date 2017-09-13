@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
 use Illuminate\Support\Facades\Response;
+use Excel;
 
 class Course_Controller extends Controller
 {
@@ -16,7 +17,13 @@ class Course_Controller extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+            if($this->user->role !== 'client'){
+                return redirect('/unauthorized');
+            }
+            return $next($request);
+        });
     }
 
     public function course(Request $request, $option = null){

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Auth;
+use Excel;
 use Illuminate\Support\Facades\Response;
 
 class Student_Controller extends Controller
@@ -16,7 +17,13 @@ class Student_Controller extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware(function ($request, $next) {
+            $this->user = Auth::user();
+            if($this->user->role !== 'client'){
+                return redirect('/unauthorized');
+            }
+            return $next($request);
+        });
     }
 
     /**
@@ -44,8 +51,8 @@ class Student_Controller extends Controller
 	            $data[$key][] = $student[$key]->first_name." ".$student[$key]->last_name;
 	            //$data[$key][] = $student[$key]->Gender;
 	            $data[$key][] = $student[$key]->year;
-                $data[$key][] = '<div class="btn-group"><button type="submit" class="btn btn-info" id="update-student-button" data-id="'.$student[$key]->id.'">
-                <i class="fa fa-lg fa-edit"></i></button><button type="submit" class="btn btn-warning" id="delete-student-button" data-id="'.$student[$key]->id.'">
+                $data[$key][] = '<div class="btn-group"><button type="submit" data-toggle="modal" data-target=".update_student" class="btn btn-info" id="update-student-button" data-id="'.$student[$key]->id.'">
+                <i class="fa fa-lg fa-edit"></i></button><button type="submit" data-toggle="modal" data-target=".delete_student" class="btn btn-warning" data-id="'.$student[$key]->id.'">
                 <i class="fa fa-lg fa-trash"></i></button></div>';
 	        }
         }
@@ -84,7 +91,9 @@ class Student_Controller extends Controller
             ->insert($data);
 
             echo json_encode($insert);
-    	}
+    	}else if($option === 'upload'){
+            $this->upload();
+        }
     }
 
     public function retrieve($table){
@@ -97,7 +106,7 @@ class Student_Controller extends Controller
         }
     }
 
-    public function search_by_id(Request $request){
+    public function search_by_id_number(Request $request){
         $search = [
             'id' => $request->id,
         ];
@@ -126,5 +135,52 @@ class Student_Controller extends Controller
 
             echo json_encode($result);
         }
+    }
+
+    public function search_by_id($id){
+        $student = DB::table('student')
+            ->where('id', $id)
+            ->get();
+
+        echo json_encode($student);
+    }
+
+    public function upload(){
+
+        $absolute_path = realpath($_FILES['file']['tmp_name']);
+        $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+
+        // $data = Excel::selectSheets('Sheet1')->load($absolute_path);
+
+        // echo json_encode($data);
+        Excel::load($absolute_path, function($reader) {
+            // reader methods
+            foreach ($reader->toArray() as $key => $value) {
+                if($value['student'] === null){
+                    continue;
+                }
+                $data[$key]['student_number'] = $value['student'];
+                $data[$key]['first_name'] = $value['student_name'];
+                // $data[$key][] = $value['gender'];
+                $data[$key]['year'] = $value['year'];
+                // $data[$key][] = $value['program'];
+                $data[$key]['last_name'] = 'last name';
+                $data[$key]['course_id'] = 1;
+                // $data[$key][] = $value['home_address'];
+            }
+            
+            $insert = DB::table('student')
+            ->insert($data);
+
+            echo json_encode($insert);
+            // Loop through all sheets
+            // $reader->each(function($sheet){
+            //     // return $sheet;
+            //     // Loop through all rows
+            //     $sheet->each(function($row) {
+            //         return $row;
+            //     });
+            // });
+        });
     }
 }

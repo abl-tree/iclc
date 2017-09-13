@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- CSS-->
     <link rel="stylesheet" type="text/css" href="{{ asset('css/main.css') }}">
-    <link rel="stylesheet" type="text/css" href="{{ asset('css/search.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/select.dataTable.min.css') }}">
+    @yield('css')
 
     <title>ICLC System</title>
     <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries-->
@@ -49,7 +50,7 @@
           <div class="user-panel">
             <div class="pull-left image"><img class="img-circle" src="https://s3.amazonaws.com/uifaces/faces/twitter/jsa/48.jpg" alt="User Image"></div>
             <div class="pull-left info">
-              <p>{{ Auth::user()->name }}</p>
+              <p>{{ Auth::user()->username }}</p>
               <p class="designation">{{ Auth::user()->position }}</p>
             </div>
           </div>

@@ -14,11 +14,17 @@
 
 Auth::routes();
 
+//unauthorized user
+Route::get('/unauthorized', function(){
+	return view('pages/unauthorized');
+});
+
 //student_controller
 Route::get('/student', 'Student_Controller@index') -> name('students');
 Route::post('/student/{option?}', 'Student_Controller@student');
 Route::get('/studentlist', 'Student_Controller@student_list');
-Route::get('/student/search', 'Student_Controller@search_by_id');
+Route::get('/student/search', 'Student_Controller@search_by_id_number');
+Route::get('/student/{id?}', 'Student_Controller@search_by_id');
 
 //course_controller
 Route::post('/course/{option?}', 'Course_Controller@course');
@@ -38,14 +44,15 @@ Route::post('/department/{option?}', 'Department_Controller@department');
 Route::get('/transaction', 'Transaction_Controller@index') -> name('transaction');
 Route::get('/transaction/{option?}', 'Transaction_Controller@transaction');
 Route::post('/transaction/{option?}', 'Transaction_Controller@transaction');
+Route::post('/transaction/history/{option?}', 'Transaction_Controller@payment_history');
 
 //cashier_controller
 Route::get('/cashier', 'Cashier_Controller@index') -> name('cashiers');
 Route::get('/cashier/{option?}', 'Cashier_Controller@cashier');
 
-Route::get('/test', function(){
-	echo Auth::user();
-});
+//report_controller
+Route::get('/report', 'Report_Controller@index') -> name('reports');
+Route::get('/report/{option?}', 'Report_Controller@report');
 
 Route::get('/home', 'HomeController@index') -> name('home');
 Route::get('/edit', 'HomeController@edit') -> name('edit');
@@ -62,7 +69,6 @@ Route::post('/items/delete', 'HomeController@deleteItem');
 Route::post('/items/update', 'HomeController@updateItem');
 Route::post('/account', 'HomeController@accountUpdate') -> name('account');
 Route::get('/student/transaction/{id}', 'HomeController@transaction');
-Route::get('/student/{id?}', 'HomeController@transaction');
 Route::get('/itemlists', 'HomeController@item_lists');
 Route::get('/create', 'HomeController@add_student') -> name('add-student');
 Route::get('/update', 'HomeController@update_student') -> name('update-student');
@@ -92,7 +98,7 @@ Route::get('getcontact','HomeController@getContact');
 Route::post('postcontact/{opt}/{or}','HomeController@postContact')->name('email');
 
 //pdf
-Route::get('/reports', 'HomeController@query') -> name('reports');
+// Route::get('/reports', 'HomeController@query') -> name('reports');
 Route::get('/reportslist', 'HomeController@report_list');
 Route::get('/reports/filter/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@filter') -> name('filter');
 Route::get('/reports/csv/{year?}/{sem?}/{acadyear?}/{course?}', 'HomeController@csv') -> name('csv');
