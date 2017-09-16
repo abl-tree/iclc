@@ -1,15 +1,25 @@
 @extends('layouts.common')
 
+@section('css')
+    <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"> -->
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/buttons.dataTables.min.css') }}">
+
+@endsection
+
 @section('sidebar')
 <ul class="sidebar-menu">
   <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
-  <li class="active"><a href="{{ route('transaction')}}"><i class="fa fa-pie-chart"></i><span>Transaction</span></a></li>
-  <li class="treeview"><a href="#"><i class="fa fa-th-list"></i><span>Records</span><i class="fa fa-angle-right"></i></a>
+  <li class="active"><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
+  <li class="treeview"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
       <li><a href="{{ route('students')}}"><i class="fa fa-circle-o"></i> Student</a></li>
       <li><a href="{{ route('cashiers')}}"><i class="fa fa-circle-o"></i> Cashier</a></li>
-      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Items</a></li>
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Reports</span></a></li>
+      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Item</a></li>
+    </ul>
+  </li>
+  <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
     </ul>
   </li>
 </ul>
@@ -31,7 +41,7 @@
     </div>
     <div class="row">
       <form class="form-horizontal" id="student-info" role="form">
-        <!-- {{ csrf_field() }} -->
+        {{ csrf_field() }}
         <div class="col-md-6">
           <div class="card">
             <h3 class="card-title">Student Info</h3>
@@ -82,7 +92,7 @@
             <div class="card-footer">
               <div class="row">
                 <div class="col-md-8 col-md-offset-4">
-                  <button id="submitBttn" class="btn btn-primary icon-btn" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Generate</button>
+                  <button id="submitBttn" class="btn btn-primary icon-btn disabled" type="button" data-toggle="modal" data-target="#add_item_modal"><i class="fa fa-fw fa-lg fa-check-circle"></i>Add Item</button>
                 </div>
               </div>
             </div>
@@ -117,7 +127,9 @@
           <div class="card-footer">
             <div class="row">
               <div class="col-md-8 col-md-offset-4">
-                <button id="submitBttn" class="btn btn-primary icon-btn" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
+                <div class="btn-group">
+                  <button id="submitBttn" class="btn btn-primary icon-btn" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
+                </div>
               </div>
             </div>
           </div>
@@ -224,6 +236,7 @@
           </div>
         </div>
       </div> 
+      <!-- End Academic Year Modal -->
 
       <!-- Semester Modal -->
       <div id="semester_modal" class="modal fade">
@@ -259,6 +272,56 @@
           </div>
         </div>
       </div> 
+      <!-- End Semester Modal -->
+
+      <!-- Add Item Modal -->
+      <div id="add_item_modal" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">      
+            <form id="add-item-form" class="form-horizontal" role="form">    
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h3 class="modal-title">Add Item</h3>
+            </div>
+            <div class="modal-body">
+                <div class="card-body">
+                  <table class="table table-hover table-bordered" id="itemTable" style="width: 100%">
+                        <thead>
+                          <tr>
+                            <th hidden>ID</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </thead>
+                        <tfoot>
+                          <tr>
+                            <th hidden>ID</th>
+                            <th>Name</th>
+                            <th>Amount</th>
+                            <th>Status</th>
+                          </tr>
+                        </tfoot>
+                  </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-md-4 text-left item_total">
+                      <h5><strong>Total:</strong></h5><span>PHP 0</span>
+                    </div>
+                    <div class="col-md-8">
+                      <a class="btn btn-success icon-btn"  class="close" data-dismiss="modal"><i class="fa fa-fw fa-lg fa-check-circle"></i>Continue</a>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </form>
+          </div>
+        </div>
+      </div> 
+      <!-- End Add Item Modal -->
 
     </div>
   </div>
@@ -270,10 +333,81 @@
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
 <script src="{{ asset('js/plugins/bootstrap-notify.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/dataTables.buttons.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/buttons.html5.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/buttons.flash.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/buttons.print.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
 <script>
   $(document).ready(function(){
-    var stud_info = '';
-    var table = $('#payment-history').DataTable();
+    var table = $('#payment-history').DataTable();    
+    var item_table = $('#itemTable').DataTable({
+                select: true,
+                select: {
+                    style: 'mobile',
+                    selector: 'tr'
+                },
+                "columnDefs": [
+                  {
+                      "targets": [ 0 ],
+                      "visible": false,
+                      "searchable": false
+                  }
+                ],
+                dom: 'Bfrtip',
+                buttons: [
+                  {
+                    text: 'Select All',
+                    action: function(e, dt, node, config){              
+                        item_table.rows().select();  
+                        var total = 0;
+                        var rowData = item_table.rows('.selected').data();
+                        $.each(rowData,function(key,value){
+                            total += parseFloat(value[2]);
+                        })
+
+                        $('.item_total span').text('PHP: '+total);
+                    },
+                    enabled: true
+                  },
+                  {
+                    text: 'Unselect All',
+                    action: function(e, dt, node, config){              
+                        item_table.rows().deselect();
+                        var total = 0;
+                        var rowData = item_table.rows('.selected').data();
+                        $.each(rowData,function(key,value){
+                            total += parseFloat(value[2]);
+                        })
+
+                        $('.item_total span').text('PHP: '+total);
+                    },
+                    enabled: true
+                  },
+                  'pageLength'
+                ]
+              });
+
+    item_table.on( 'deselect', function () {
+        var total = 0;
+        var rowData = item_table.rows('.selected').data();
+        $.each(rowData,function(key,value){
+            total += parseFloat(value[2]);
+        })
+
+        $('.item_total span').text('PHP '+total);
+    } );
+
+    item_table.on( 'select', function () {
+        var total = 0;
+        var rowData = item_table.rows('.selected').data();
+        $.each(rowData,function(key,value){
+            total += parseFloat(value[2]);
+        })
+
+        $('.item_total span').text('PHP '+total);
+    } );
 
     $('#add-acadyear-form').submit(function(e){
       e.preventDefault();
@@ -311,6 +445,9 @@
           $(this).val('');
       }else{
           $('select[name="semester"]').removeAttr('disabled');
+          if($('input[name="student-id"]').val()){
+            $('#student-info').submit();
+          }
       }
     });
 
@@ -350,34 +487,14 @@
           $(this).val('');
       }else{
           $('input[name="studentID"]').removeAttr('disabled');
-      }
-    });
-
-    $('input[name="studentID"]').on('input', function(){
-      $('input[name="studentName"]').val('Retrieving...');
-      $.ajax({
-        url: '/student/search',
-        method: 'GET',
-        dataType: 'json',
-        data: {id: $(this).val()},
-        success: function(data){
-          if(data.status === 'exists'){
-            $('input[name="studentName"]').val(data.info['first_name']+" "+data.info['last_name']);
-            $('input[name="student-id"]').val(data.info['id']);
-          }else if(data.status === 'not exists'){
-            $('input[name="studentName"]').val("ID does not exist");
-            $('input[name="student-id"]').val('');
-          }else{
-            $('input[name="studentName"]').val("");
-            $('input[name="student-id"]').val('');
+          if($('input[name="student-id"]').val()){
+            $('#student-info').submit();
           }
-        }
-      });
+      }
     });
 
     $('#student-info').submit(function(e){
       e.preventDefault();
-      stud_info = $(this).serialize();
 
       $.ajax({
         type: 'GET',
@@ -385,9 +502,7 @@
         data: $(this).serialize(),
         url: '/transaction/payment',
         success: function(data){
-          console.log(table);
           table.ajax.url(data.link).load();
-          $('input[name="total-amount"]').val(data.balance);
         },
         error: function(){
           $('input[name="total-amount"]').val('');
@@ -406,23 +521,26 @@
       if(!$(this).val()){
         $('input[name="cash-change"]').val(0);
       }
-
     });
 
     $('#payment-info').submit(function(e){
       e.preventDefault();
       var total = parseFloat($('input[name="total-amount"]').val());
       var cash = parseFloat($('input[name="cash-amount"]').val());
-      var payment_details = $(this).serialize()+'&'+stud_info;
+      var ids = $.map(item_table.rows('.selected').data(), function (item) {
+            return item[0]
+        });      
+      var data = $('#student-info, #payment-info').serializeArray();
+      data.push({name: 'item_id', value: ids});
 
       if($('input[name="student-id"]').val()){
         $.ajax({
           url: 'transaction/confirm',
           method: 'post',
-          data: payment_details,
+          data: data,
           dataType: 'json',
           success: function(data){
-            console.log(data);
+            table.ajax.url(data.link).load();
             $.notify({
                 title: "Transaction Complete : ",
                 message: "Transaction is added!",
@@ -430,6 +548,22 @@
               },{
                 type: "success"
               });
+
+            $('#payment-info')[0].reset();           
+            item_table.rows().deselect();
+          },
+          error: function(xhr){
+            var error = JSON.parse(xhr.responseText);
+            
+            $.notify({
+                title: "Transaction Error : ",
+                message: error.item_id,
+                icon: 'fa fa-close' 
+              },{
+                type: "danger"
+              });
+
+            $('#payment-info')[0].reset();  
           }
         });
       }else{
@@ -441,7 +575,101 @@
             type: "warning"
           });
       }
+    });    
+
+    $('input[name="studentID"]').on('input', function(){
+      $('input[name="studentName"]').val('Retrieving...');
+      table.clear().draw();
+      if(!$('#student-info #submitBttn').hasClass('disabled')){
+        $('#student-info #submitBttn').addClass('disabled');
+      }
     });
+
+    (function($){
+        $.fn.extend({
+            donetyping: function(callback,timeout){
+                timeout = timeout || 1e3; // 1 second default timeout
+                var timeoutReference,
+                    doneTyping = function(el){
+                        if (!timeoutReference) return;
+                        timeoutReference = null;
+                        callback.call(el);
+                    };
+                return this.each(function(i,el){
+                    var $el = $(el);
+                    // Chrome Fix (Use keyup over keypress to detect backspace)
+                    // thank you @palerdot
+                    $el.is(':input') && $el.on('keyup keypress paste',function(e){
+                        // This catches the backspace button in chrome, but also prevents
+                        // the event from triggering too preemptively. Without this line,
+                        // using tab/shift+tab will make the focused element fire the callback.
+                        if (e.type=='keyup' && e.keyCode!=8) return;
+                        
+                        // Check if timeout has been set. If it has, "reset" the clock and
+                        // start over again.
+                        if (timeoutReference) clearTimeout(timeoutReference);
+                        timeoutReference = setTimeout(function(){
+                            // if we made it here, our timeout has elapsed. Fire the
+                            // callback
+                            doneTyping(el);
+                        }, timeout);
+                    }).on('blur',function(){
+                        // If we can, fire the event since we're leaving the field
+                        doneTyping(el);
+                    });
+                });
+            }
+        });
+    })(jQuery);
+
+    $('input[name="studentID"]').donetyping(function(){
+      $.ajax({
+            url: '/student/search',
+            method: 'GET',
+            dataType: 'json',
+            data: {id: $(this).val()},
+            success: function(data){
+              if(data.status === 'exists'){
+                $('input[name="studentName"]').val(data.info['name']);
+                $('input[name="student-id"]').val(data.info['id']);
+                $('#student-info #submitBttn').removeClass('disabled');
+                $('#student-info').submit();
+              }else if(data.status === 'not exists'){
+                $('input[name="studentName"]').val("ID does not exist");
+                $('input[name="student-id"]').val('');
+              }else{
+                $('input[name="studentName"]').val("");
+                $('input[name="student-id"]').val('');
+              }
+            }
+          });
+    });
+
+    $('#add_item_modal').on('hidden.bs.modal', function(){
+      var ids = $.map(item_table.rows('.selected').data(), function (item) {
+            return item[0]
+        });
+      var data = $('#student-info').serializeArray();
+      data.push({name: 'item_id', value: ids});
+
+      $.ajax({
+        url: '/transaction/add_item',
+        method: 'POST',
+        data: data,
+        dataType: 'json',
+        success: function(data){
+          $('input[name="total-amount"]').val(data[0].bal);
+          $('input[name="cash-change"]').val($('input[name="cash-amount"]').val()-data[0].bal);
+          $('#add_item_modal').modal('hide');
+        }
+      })
+    })
+
+    $('#add_item_modal').on('shown.bs.modal', function(){
+      var data = $('#student-info').serialize();
+
+      item_table.ajax.url('/transaction/unpaid?'+data).load();
+    })
 
   });
 </script>

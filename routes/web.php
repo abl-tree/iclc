@@ -33,6 +33,7 @@ Route::post('/course/{option?}', 'Course_Controller@course');
 Route::get('/items', 'Item_Controller@index') -> name('items');
 Route::post('/item/{option?}', 'Item_Controller@item');
 Route::get('/itemlist', 'Item_Controller@item_list');
+Route::get('/item/search/{id?}', 'Item_Controller@search_by_id');
 
 //semester_controller
 Route::post('/semester/{option?}', 'Semester_Controller@semester');
@@ -53,6 +54,18 @@ Route::get('/cashier/{option?}', 'Cashier_Controller@cashier');
 //report_controller
 Route::get('/report', 'Report_Controller@index') -> name('reports');
 Route::get('/report/{option?}', 'Report_Controller@report');
+
+// Route::get('/test', function(){
+// 	$num = 4;
+// 	$num_padded = sprintf("%05d", $num);
+// 	echo '2014-'.$num_padded; // returns 04
+
+// 	$request->session()->flash('status', 'Task was successful!');
+// });
+
+Route::get('/test/{id?}', 'Item_Controller@test');
+
+
 
 Route::get('/home', 'HomeController@index') -> name('home');
 Route::get('/edit', 'HomeController@edit') -> name('edit');

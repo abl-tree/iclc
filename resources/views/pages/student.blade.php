@@ -3,13 +3,17 @@
 @section('sidebar')
 <ul class="sidebar-menu">
   <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
-  <li><a href="{{ route('transaction')}}"><i class="fa fa-pie-chart"></i><span>Transaction</span></a></li>
-  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Records</span><i class="fa fa-angle-right"></i></a>
+  <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
+  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
       <li><a href="{{ route('students')}}"><i class="fa fa-circle-o"></i> Student</a></li>
       <li><a href="{{ route('cashiers')}}"><i class="fa fa-circle-o"></i> Cashier</a></li>
-      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Items</a></li>
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Reports</span></a></li>
+      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Item</a></li>
+    </ul>
+  </li>
+  <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
     </ul>
   </li>
 </ul>
@@ -27,48 +31,34 @@
           <li>Records</li>
           <li class="active"><a href="#">Student</a></li>
         </ul>
+      </div>      
+      <div class="btn-group">
+        <form class="btn-group" id="upload" method="post" enctype="multipart/form-data">
+          {{ csrf_field() }}
+            <label rel="tooltip" data-toggle="tooltip" class="btn btn-default btn-upload" title="Upload excel file">
+              <input type="file" class="sr-only" name="excel" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
+              <span>
+                <span id="upload_icon" class="fa fa-upload"></span>
+              </span>
+            </label>
+        </form>
+        <a type="submit" data-toggle="modal" data-target="#add_student" class="btn btn-primary btn-flat" rel="tooltip" data-toggle="tooltip" title="Add student"><i class="fa fa-lg fa-plus"></i></a>
+        <a id="delete-selected-row" class="btn btn-danger btn-flat disabled" rel="tooltip" data-toggle="tooltip" title="Delete selected rows"><i class="fa fa-lg fa-trash-o"></i></a>
+        <a type="submit" data-toggle="modal" data-target=".update_student" rel="tooltip" data-toggle="tooltip" title="Update selected row" id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
       </div>
-      <div><a class="btn btn-primary btn-flat" id="add-student-button"><i class="fa fa-lg fa-plus"></i> Add student</a></div>
     </div>
     <div class="row">
       <div class="col-md-12">
         <div class="card">  
           <div class="card-body">
-            <form id="upload" action="/student/upload" method="post" enctype="multipart/form-data">
-
-              {{ csrf_field() }}
-              <div class="btn-group">
-                <button type="button" class="btn btn-primary" data-method="reset" title="Reset">
-                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;reset&quot;)">
-                    <span class="fa fa-refresh"></span>
-                  </span>
-                </button>
-                <label class="btn btn-primary btn-upload" for="inputImage" title="Upload excel file">
-                  <input type="file" class="sr-only" id="inputImage" name="file" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
-                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="Upload excel file">
-                    <span class="fa fa-upload"></span>
-                  </span>
-                </label>
-                <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
-                  <span class="docs-tooltip" data-toggle="tooltip" title="" data-original-title="$().cropper(&quot;destroy&quot;)">
-                    <span class="fa fa-power-off"></span>
-                  </span>
-                </button>
-              </div>
-            </form>
-            <div class="btn-group">
-              <button type="submit" data-toggle="modal" data-target=".delete_student" class="btn btn-warning" data-id="1">
-              <i class="fa fa-lg fa-trash"></i></button>
-            </div>
-            </br>
             <table class="table table-hover table-bordered" id="sampleTable" style="width: 100%;">
                 <thead>
                   <tr>
                     <th style="display: none;">ID</th>
                     <th>ID #</th>
                     <th>Name</th>
+                    <th>Gender</th>
                     <th>Year</th>
-                    <th>Option</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -76,8 +66,8 @@
                     <th style="display: none;">ID</th>
                     <th>ID #</th>
                     <th>Name</th>
+                    <th>Gender</th>
                     <th>Year</th>
-                    <th>Option</th>
                   </tr>
                 </tfoot>
             </table>
@@ -110,14 +100,8 @@
               </div>
               <div class="form-group{{ $errors->has('firstName') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Name</label>
-                <div class="col-md-3">
-                  <input class="form-control" type="text" placeholder="Firstname" id="first_name" name="firstName" value="{{ old('firstName') }}" required>
-                </div>
-                <div class="col-md-3">
-                  <input class="form-control" type="text" placeholder="Middlename" id="middle_name" name="middleName" value="{{ old('middleName') }}" required>
-                </div>
-                <div class="col-md-3">
-                  <input class="form-control" type="text" placeholder="Lastname" id="last_name" name="lastName" value="{{ old('lastName') }}" required>
+                <div class="col-md-9">
+                  <input class="form-control" type="text" placeholder="Lastname, Firstname MI." id="first_name" name="firstName" value="{{ old('firstName') }}" required>
                 </div>
               </div>            
               <div class="form-group{{ $errors->has('studCourse') ? ' has-error' : '' }}">       
@@ -234,12 +218,12 @@
                 <div class="col-md-9">
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="studGender" id="studGender" value="M" required>Male
+                      <input type="radio" name="update-studGender" id="update-studGender" value="M" required>Male
                     </label>
                   </div>
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="studGender" id="studGender" value="F" required>Female
+                      <input type="radio" name="update-studGender" id="update-studGender" value="F" required>Female
                     </label>
                   </div>
                 </div>
@@ -335,14 +319,16 @@
 @section('js')
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
-<script type="text/javascript">
-</script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
 <script>
 $(document).ready(function(){
-
-    $('[data-toggle="tooltip"]').tooltip();  
-  $('#sampleTable').DataTable({
-    "ajax": "/studentlist",    
+  var table = $('#sampleTable').DataTable({
+    "ajax": "/studentlist",
+    select: true,
+    select: {
+        style: 'mobile',
+        selector: 'tr'
+    },
     "columnDefs": [
         {
             "targets": [ 0 ],
@@ -369,9 +355,46 @@ $(document).ready(function(){
         // }
     ],
     // createdRow: function( row, data, dataIndex ) {
-    //     $( row ).attr("onclick", "window.location.href = 'student/transaction/"+data[0]+"'");
+    //     $( row ).attr("data-id", data[0]);
     // }
   });
+
+  table.on( 'deselect', function () {
+      var selectedRows = table.rows( { selected: true } ).count();
+
+      if( selectedRows > 0 ){
+        $('#delete-selected-row').removeClass('disabled');
+        if(selectedRows === 1){
+          $('#update-selected-row').removeClass('disabled');
+        }else{
+          $('#update-selected-row').addClass('disabled');
+        }
+      }else{
+        $('#delete-selected-row').addClass('disabled');
+        $('#update-selected-row').addClass('disabled');
+      }
+  } );
+
+  table.on( 'select', function () {
+      var selectedRows = table.rows( { selected: true } ).count();
+
+      if( selectedRows > 0 ){
+        $('#delete-selected-row').removeClass('disabled');
+        if(selectedRows === 1){
+          $('#update-selected-row').removeClass('disabled');
+        }else{
+          $('#update-selected-row').addClass('disabled');
+        }
+      }else{
+        $('#delete-selected-row').addClass('disabled');
+        $('#update-selected-row').addClass('disabled');
+      }
+  } );
+
+  $('#delete-selected-row').click(function(){       
+    // table.rows('.selected').remove().draw(false);
+    console.log(table.rows('.selected').data());
+  })
 
   $('#add-student-form').submit(function(e){
     e.preventDefault();
@@ -380,7 +403,7 @@ $(document).ready(function(){
           url: "/student/add",
           data: $(this).serialize(),
           success: function(data){   
-            console.log(data);
+            table.ajax.url('/studentlist').load();
             swal({
             title:"Added!", 
             text:"Student has been added to the database.", 
@@ -479,15 +502,14 @@ $('#delete-student-form').submit(function(e){
   });
 
   $('.update_student').on('shown.bs.modal', function(e){
-    // $('select[name="studCourse"]').val('');
-    var id = $(e.relatedTarget).data('id');
+    var id = table.rows('.selected').data()[0][0];
     var url = "/student/"+id;
 
     $.getJSON(url, function(data){
-      console.log(data);
       $('input[name="student_id"]').val(data[0].id);
       $('input[name="studNum"]').val(data[0].student_number);
-      $('input[name="studName"]').val(data[0].first_name+" "+data[0].last_name);
+      $('input[name="studName"]').val(data[0].name);
+      $('input[name="update-studGender"][value="'+data[0].gender+'"]').prop('checked', true);
       $('select[name="studCourse"]').val(data[0].course_id);
       $('select[name="update_studYear"]').val(data[0].year);
     });
@@ -502,6 +524,30 @@ $('#delete-student-form').submit(function(e){
   })
 
   $('input[name="file"]').change(function(){
+    $('#upload').submit();
+  });
+
+  $('#upload').submit(function(e){
+    e.preventDefault();
+    $('#upload_icon').attr('class', 'fa fa-spinner fa-spin');
+    $.ajax({   
+        url:'/student/upload',  
+        method:'POST',  
+        data:new FormData(this),  
+        contentType: false,  
+        cache: false,  
+        processData:false,  
+        success:function(data){  
+          table.ajax.url('/studentlist').load();
+          $('#upload_icon').attr('class', 'fa fa-upload');
+        },
+        error: function(){
+          $('#upload_icon').attr('class', 'fa fa-upload');
+        }
+    });  
+  });
+
+  $('input[type="file"]').change(function(){
     $('#upload').submit();
   });
 

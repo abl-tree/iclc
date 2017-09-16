@@ -71,6 +71,11 @@
 <script src="{{ asset('js/main.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/plugins/bootstrap-notify.min.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/plugins/sweetalert.min.js') }}"></script>
+<script type="text/javascript">
+  $('body').tooltip({
+    selector: '[rel="tooltip"]'
+  });  
+</script>
 <!-- Javascripts-->
 </body>
 

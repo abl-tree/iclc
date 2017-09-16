@@ -3,13 +3,17 @@
 @section('sidebar')
 <ul class="sidebar-menu">
   <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
-  <li><a href="{{ route('transaction')}}"><i class="fa fa-pie-chart"></i><span>Transaction</span></a></li>
-  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Records</span><i class="fa fa-angle-right"></i></a>
+  <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
+  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
       <li><a href="{{ route('students')}}"><i class="fa fa-circle-o"></i> Student</a></li>
       <li><a href="{{ route('cashiers')}}"><i class="fa fa-circle-o"></i> Cashier</a></li>
-      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Items</a></li>
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Reports</span></a></li>
+      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Item</a></li>
+    </ul>
+  </li>
+  <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
     </ul>
   </li>
 </ul>
@@ -28,7 +32,11 @@
           <li class="active"><a href="#">Items</a></li>
         </ul>
       </div>
-      <div><a class="btn btn-primary btn-flat" id="add-item"><i class="fa fa-lg fa-plus"></i> Add Item</a></div>
+      <div class="btn-group">
+        <a type="submit" data-toggle="modal" data-target="#add_item" class="btn btn-primary btn-flat" rel="tooltip" data-toggle="tooltip" title="Add student"><i class="fa fa-lg fa-plus"></i></a>
+        <a id="delete-selected-row" class="btn btn-danger btn-flat disabled" rel="tooltip" data-toggle="tooltip" title="Delete selected rows"><i class="fa fa-lg fa-trash-o"></i></a>
+        <a type="submit" data-toggle="modal" data-target="#update_item" rel="tooltip" data-toggle="tooltip" title="Update selected row" id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
+      </div>
     </div>
     <div class="row">
       <div class="col-md-12">
@@ -37,18 +45,18 @@
             <table class="table table-hover table-bordered" id="itemTable" style="width: 100%;">
                 <thead>
                   <tr>
+                    <th hidden>ID</th>
                     <th>Name</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Options</th>
                   </tr>
                 </thead>
                 <tfoot>
                   <tr>
+                    <th hidden>ID</th>
                     <th>Name</th>
                     <th>Amount</th>
                     <th>Status</th>
-                    <th>Options</th>
                   </tr>
                 </tfoot>
             </table>
@@ -171,29 +179,29 @@
       <div class="modal-body">
           <div class="card-body">
               {{ csrf_field() }}
-              <div class="form-group{{ $errors->has('itemName') ? ' has-error' : '' }}">
+              <div class="form-group{{ $errors->has('update-item-name') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Name</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" placeholder="Enter item name" id="itemName" name="itemName" value="{{ old('itemName') }}" required autofocus>
+                  <input class="form-control" type="text" placeholder="Enter item name" id="update-item-name" name="update-item-name" value="{{ old('update-item-name') }}" required autofocus>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('itemPrice') ? ' has-error' : '' }}">
+              <div class="form-group{{ $errors->has('update-item-price') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Price</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="number" step="any" placeholder="Enter item price" id="itemPrice" name="itemPrice" value="{{ old('itemPrice') }}" required>
+                  <input class="form-control" type="number" step="any" placeholder="Enter item price" id="update-item-price" name="update-item-price" value="{{ old('update-item-price') }}" required>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('itemStatus') ? ' has-error' : '' }}" >
+              <div class="form-group{{ $errors->has('update-item-status') ? ' has-error' : '' }}" >
                 <label class="control-label col-md-3">Status</label>
                 <div class="col-md-9">
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="0"  required>Optional
+                      <input type="radio" name="update-item-status" id="update-item-status" value="0"  required>Optional
                     </label>
                   </div>
                   <div class="radio-inline">
                     <label>
-                      <input type="radio" name="itemStatus" id="itemStatus" value="1" required>Mandatory
+                      <input type="radio" name="update-item-status" id="update-item-status" value="1" required>Mandatory
                     </label>
                   </div>
                 </div>
@@ -363,15 +371,61 @@
 @section('js')
 <script src="{{ asset('js/plugins/jquery.dataTables.min.js') }}"></script>
 <script src="{{ asset('js/plugins/dataTables.bootstrap.min.js') }}"></script>
+<script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
+  <script src="{{ asset('js/jszip.min.js')}}"></script>
 <script type="text/javascript">
 $(document).ready(function(){
   var table = $('#itemTable').DataTable({
-              'ajax': '/itemlist'
+              'ajax': '/itemlist',
+              select: true,
+              select: {
+                  style: 'mobile',
+                  selector: 'tr'
+              },
+              "columnDefs": [
+                {
+                    "targets": [ 0 ],
+                    "visible": false,
+                    "searchable": false
+                }
+              ]
             });
 
-  $('#add-item').click(function(){    
-    $('#add_item').modal("show");
-  });
+    table.on( 'deselect', function () {
+      var selectedRows = table.rows( { selected: true } ).count();
+
+      if( selectedRows > 0 ){
+        $('#delete-selected-row').removeClass('disabled');
+        if(selectedRows === 1){
+          $('#update-selected-row').removeClass('disabled');
+        }else{
+          $('#update-selected-row').addClass('disabled');
+        }
+      }else{
+        $('#delete-selected-row').addClass('disabled');
+        $('#update-selected-row').addClass('disabled');
+      }
+  } );
+
+  table.on( 'select', function () {
+      var selectedRows = table.rows( { selected: true } ).count();
+
+      if( selectedRows > 0 ){
+        $('#delete-selected-row').removeClass('disabled');
+        if(selectedRows === 1){
+          $('#update-selected-row').removeClass('disabled');
+        }else{
+          $('#update-selected-row').addClass('disabled');
+        }
+      }else{
+        $('#delete-selected-row').addClass('disabled');
+        $('#update-selected-row').addClass('disabled');
+      }
+  } );
+
+  $('#delete-selected-row').click(function(){       
+    table.rows('.selected').remove().draw(false);
+  })
 
   $('#add-semester-form').submit(function(e){
     e.preventDefault();
@@ -587,16 +641,8 @@ $(document).ready(function(){
       url: "/item/add",
       data: $(this).serialize(),
       dataType: 'json',
-      success: function(data){   
-        console.log(data);
-        table.row.add( [
-          data.name,
-          data.amount,
-          data.status,
-          '<div class="btn-group"><button type="submit" class="btn btn-info" id="update-item-button" data-id="'+data.id+'">'+
-          '<i class="fa fa-lg fa-edit"></i></button><button type="submit" class="btn btn-warning" id="delete-item-button" data-id="'+data.id+'">'+
-          '<i class="fa fa-lg fa-trash"></i></button></div>'
-        ] ).draw(true);
+      success: function(data){
+        table.ajax.url('/itemlist').load();
 
         swal({
         title:"Added!", 
@@ -611,6 +657,21 @@ $(document).ready(function(){
       }
     });
   });
+
+  $('#update_item').on('shown.bs.modal', function(e){
+    var id = table.rows('.selected').data()[0][0];
+    var url = "/item/search/"+id;
+
+    $.getJSON(url, function(data){
+      $('input[name="update-item-name"]').val(data[0].description);
+      $('input[name="update-item-price"]').val(data[0].amount);
+      $('input[name="update-item-status"][value="'+data[0].option+'"]').prop('checked', true);;
+    });
+  })
+
+  $('#update_item').on('hidden.bs.modal', function(e){
+    $('#update-item-form')[0].reset();
+  })
   
 });
 

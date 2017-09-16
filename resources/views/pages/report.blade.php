@@ -2,7 +2,7 @@
 
 @section('css')
     <!-- <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css"> -->
-    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/buttons/1.4.1/css/buttons.dataTables.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ asset('css/buttons.dataTables.min.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('css/search.css') }}">
 
 @endsection
@@ -10,13 +10,17 @@
 @section('sidebar')
 <ul class="sidebar-menu">
   <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
-  <li><a href="{{ route('transaction')}}"><i class="fa fa-pie-chart"></i><span>Transaction</span></a></li>
-  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Records</span><i class="fa fa-angle-right"></i></a>
+  <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
+  <li class="treeview"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
       <li><a href="{{ route('students')}}"><i class="fa fa-circle-o"></i> Student</a></li>
       <li><a href="{{ route('cashiers')}}"><i class="fa fa-circle-o"></i> Cashier</a></li>
-      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Items</a></li>
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Reports</span></a></li>
+      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Item</a></li>
+    </ul>
+  </li>
+  <li class="treeview active"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
     </ul>
   </li>
 </ul>
@@ -33,7 +37,10 @@
           <li><a href="#">Reports</a></li>
         </ul>
       </div>
-      <div><a class="btn btn-primary btn-flat" id="pdf"><i class="fa fa-lg fa-file-pdf-o"></i></a><a id="csv" class="btn btn-info btn-flat"><i class="fa fa-lg fa-table"></i></a></div>
+      <div>
+        <a id="delete-selected-row" class="btn btn-primary btn-flat disabled"><i class="fa fa-lg fa-trash-o"></i></a>
+        <a id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
+      </div>
     </div>
         <div class="row">
       <div class="col-md-12">
@@ -91,7 +98,7 @@
               </div>
             </div>
             </br>
-            <table class="table table-hover table-bordered bulk_action" id="sampleTable">
+            <table class="table table-hover table-bordered bulk_action" id="sampleTable" style="width: 100%;">
                 <thead>
                   <tr>
                     <th hidden>ID #</th>
@@ -133,7 +140,7 @@
   <script src="{{ asset('js/plugins/DataTable_Button/js/buttons.flash.min.js') }}"></script>
   <script src="{{ asset('js/plugins/DataTable_Button/js/buttons.print.min.js') }}"></script>
   <script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="{{ asset('js/jszip.min.js')}}"></script>
   <script language="javascript">
   $(document).ready(function(){
     var table = $('#sampleTable').DataTable({
@@ -152,9 +159,8 @@
           //     }
           // },
           {
-              text: '<i class="fa fa-lg fa-print"></i> Excel',
+              text: '<i class="fa fa-print"></i> Excel',
               extend: 'excelHtml5',
-              className: 'btn btn-info btn-flat',
               customize: function( xlsx ) {
                   var sheet = xlsx.xl.worksheets['sheet1.xml'];
    
@@ -163,14 +169,14 @@
               }
           },
           "pageLength",
-          {
-            text: 'Delete',
-            action: function(e, dt, node, config){              
-                table.rows('.selected').remove().draw(false);
-                table.button( 2 ).enable(false);
-            },
-            enabled: false
-          }
+          // {
+          //   text: 'Delete',
+          //   action: function(e, dt, node, config){              
+          //       table.rows('.selected').remove().draw(false);
+          //       table.button( 2 ).enable(false);
+          //   },
+          //   enabled: false
+          // }
       ],
       "ajax": "/report/receipt",    
       "columnDefs": [
@@ -204,28 +210,38 @@
     table.on( 'deselect', function () {
         var selectedRows = table.rows( { selected: true } ).count();
  
-        table.button( 2 ).enable( selectedRows > 0 );
+        if( selectedRows > 0 ){
+          $('#delete-selected-row').removeClass('disabled');
+          if(selectedRows === 1){
+            $('#update-selected-row').removeClass('disabled');
+          }else{
+            $('#update-selected-row').addClass('disabled');
+          }
+        }else{
+          $('#delete-selected-row').addClass('disabled');
+          $('#update-selected-row').addClass('disabled');
+        }
     } );
 
     table.on( 'select', function () {
         var selectedRows = table.rows( { selected: true } ).count();
  
-        table.button( 2 ).enable( selectedRows > 0 );
+        if( selectedRows > 0 ){
+          $('#delete-selected-row').removeClass('disabled');
+          if(selectedRows === 1){
+            $('#update-selected-row').removeClass('disabled');
+          }else{
+            $('#update-selected-row').addClass('disabled');
+          }
+        }else{
+          $('#delete-selected-row').addClass('disabled');
+          $('#update-selected-row').addClass('disabled');
+        }
     } );
 
-    // Configure Print Button
-    // new $.fn.dataTable.Buttons( table, {
-    //     buttons: [
-    //         {
-    //             text: '<i class="fa fa-lg fa-print"></i> Print Assets',
-    //             extend: 'print',
-    //             className: 'btn btn-primary btn-sm m-5 width-140 assets-select-btn export-print'
-    //         }
-    //     ]
-    // } );
-     
-    // // Add the Print button to the toolbox
-    // console.log(table.buttons( 1, null ).container().appendTo( '.page-title' ));
+    $('#delete-selected-row').click(function(){       
+      table.rows('.selected').remove().draw(false);
+    })
 
     $('select[name="semester"]').change(function(){
       $('#sampleTable').DataTable().column(1).search($(this).val()).draw();

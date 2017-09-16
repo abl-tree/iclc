@@ -17,8 +17,8 @@ class Student extends Migration
         Schema::create('student', function(Blueprint $table){
             $table->increments('id');
             $table->string('student_number')->unique();
-            $table->string('first_name');
-            $table->string('last_name');
+            $table->string('name');
+            $table->string('gender')->nullable();
             $table->integer('year');
             $table->integer('course_id')->unsigned();
             $table->foreign('course_id')->references('id')->on('course');

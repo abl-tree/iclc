@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\DB;
 use Auth;
 use Excel;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Validation\Rule;
 
 class Student_Controller extends Controller
 {
@@ -17,8 +18,11 @@ class Student_Controller extends Controller
      */
     public function __construct()
     {
+
+        $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
+
             if($this->user->role !== 'client'){
                 return redirect('/unauthorized');
             }
@@ -48,12 +52,9 @@ class Student_Controller extends Controller
         	foreach ($student as $key => $value) {
                 $data[$key][] = $student[$key]->id;
 	            $data[$key][] = $student[$key]->student_number;
-	            $data[$key][] = $student[$key]->first_name." ".$student[$key]->last_name;
-	            //$data[$key][] = $student[$key]->Gender;
+	            $data[$key][] = $student[$key]->name;
+	            $data[$key][] = $student[$key]->gender;
 	            $data[$key][] = $student[$key]->year;
-                $data[$key][] = '<div class="btn-group"><button type="submit" data-toggle="modal" data-target=".update_student" class="btn btn-info" id="update-student-button" data-id="'.$student[$key]->id.'">
-                <i class="fa fa-lg fa-edit"></i></button><button type="submit" data-toggle="modal" data-target=".delete_student" class="btn btn-warning" data-id="'.$student[$key]->id.'">
-                <i class="fa fa-lg fa-trash"></i></button></div>';
 	        }
         }
 
@@ -72,8 +73,6 @@ class Student_Controller extends Controller
 	         $this->validate($request, [
 	            'studNum' => 'required|max:255',
                 'firstName' => 'required|max:255',
-                'middleName' => 'required|max:255',
-	            'lastName' => 'required|max:255',
 	            'studYear' => 'required|max:255',
 	            'studCourse' => 'required|max:255',
 	            'studGender' => 'required|max:255',
@@ -81,10 +80,10 @@ class Student_Controller extends Controller
 
 	        $data = [
                 'student_number' => $request->studNum,
-                'first_name' => ucwords($request->firstName),
-                'last_name' => ucwords($request->lastName),
+                'name' => ucwords($request->firstName),
                 'year'=>$request->studYear,
                 'course_id'=>$request->studCourse,
+                'gender'=>$request->studGender,
 	        ];
 	        
             $insert = DB::table('student')
@@ -146,33 +145,59 @@ class Student_Controller extends Controller
     }
 
     public function upload(){
-
-        $absolute_path = realpath($_FILES['file']['tmp_name']);
-        $extension = pathinfo($_FILES['file']['name'], PATHINFO_EXTENSION);
+        $absolute_path = realpath($_FILES['excel']['tmp_name']);
+        $extension = pathinfo($_FILES['excel']['name'], PATHINFO_EXTENSION);
 
         // $data = Excel::selectSheets('Sheet1')->load($absolute_path);
 
         // echo json_encode($data);
         Excel::load($absolute_path, function($reader) {
+            $data = array();
+            $saved = 0;
             // reader methods
-            foreach ($reader->toArray() as $key => $value) {
-                if($value['student'] === null){
+            foreach ($reader->toArray() as $key => $value) {  
+                $student_number = preg_replace('/\s+/', '', $value['student_number']);
+
+                if($student_number == null){
                     continue;
                 }
-                $data[$key]['student_number'] = $value['student'];
-                $data[$key]['first_name'] = $value['student_name'];
-                // $data[$key][] = $value['gender'];
-                $data[$key]['year'] = $value['year'];
-                // $data[$key][] = $value['program'];
-                $data[$key]['last_name'] = 'last name';
-                $data[$key]['course_id'] = 1;
-                // $data[$key][] = $value['home_address'];
+
+                $check = DB::table('student')
+                ->where('student_number', $student_number)
+                ->first();
+
+                $courseID = DB::table('course')
+                ->select('id')
+                ->where('name', $value['program'])
+                ->first();
+
+                if(!$courseID){
+                    $course_data = array('name' => $value['program']);
+                    $courseID = DB::table('course')
+                            ->insertGetId($course_data);
+                }else $courseID = $courseID->id;
+
+                if(!$check){
+                    $saved += 1;
+                    $data[$key]['student_number'] = $student_number;
+                    $data[$key]['name'] = $value['student_name'];
+                    $data[$key]['gender'] = $value['gender'];
+                    $data[$key]['year'] = $value['year'];
+                    $data[$key]['course_id'] = $courseID;
+                    // $data[$key][] = $value['home_address'];
+                }
             }
             
-            $insert = DB::table('student')
-            ->insert($data);
+            if($data){
+                $insert = DB::table('student')
+                ->insert($data);
 
-            echo json_encode($insert);
+                echo json_encode($saved);
+                return true;            
+            }else{
+                echo json_encode($saved);
+                return true;
+            }
             // Loop through all sheets
             // $reader->each(function($sheet){
             //     // return $sheet;
@@ -182,5 +207,11 @@ class Student_Controller extends Controller
             //     });
             // });
         });
+    }
+
+    public function delete(){
+        $users = DB::table('users')
+                    ->whereIn('id', [1, 2, 3])
+                    ->get();
     }
 }

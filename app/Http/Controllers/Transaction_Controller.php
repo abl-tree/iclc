@@ -60,43 +60,38 @@ class Transaction_Controller extends Controller
                 'student_number' => $request->studentID
                 ];
 
-            $payment = array(
-                'item' => DB::table('item')
-                ->select('id', 'amount as item_amount', DB::raw('0 as amount'))
-                ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id'], 'option'=>1]),
-                'balance' => DB::table('payment as a')
-                ->select('c.id', DB::raw('sum(b.amount) as amount'), DB::raw('c.amount as item_amount'))
-                ->join('payment_item as b','a.id','b.payment_id')
-                ->rightJoin('item as c', 'c.id', 'b.item_id')
-                ->where(['c.option'=> 1, 'c.sy_id'=>$data['sy_id'], 'c.semester_id'=>$data['semester_id']])
-                ->where(function($q) use ($data) {
-                      $q->where('a.student_id', $data['student_id'])
-                        ->orWhereNull('a.student_id');
-                  })
-                ->groupBy(DB::raw('c.id, c.amount'))
-                );
-
-            if($payment['balance']->get()->isEmpty()){
-                $payment['balance'] = $payment['item'];
-            }
-            
-            foreach ($payment['balance']->get() as $key => $value) {
-                $balance[$key]['item_id'] = $value->id;
-                $balance[$key]['balance'] = $value->item_amount - $value->amount;
-                $percentage += $balance[$key]['balance'];
-            }
-
             $data = array(
-                'balance' => $percentage,
                 'link' => '/transaction/history?student-id='.$data['student_id'].'&semester='.$data['semester_id'].'&academicYear='.$data['sy_id'].'&studentID='.$data['student_number']
                 );
 
             echo json_encode($data);
-        }else if($option === 'confirm'){  
+        }else if($option === 'add_item'){
+            $data = [
+                'sy_id' => $request->academicYear,
+                'semester_id' => $request->semester,
+                'student_id' => $request['student-id'],
+                'student_number' => $request->studentID
+                ];
+
+            $item_id = array_map('intval', explode(',', $request->item_id));
+
+            $payment = array(
+                'balance' => DB::table('item')
+                ->select(DB::raw('sum(amount) as bal'))
+                ->whereIn('id', $item_id)
+                ->get()
+                );
+
+            echo json_encode($payment['balance']);
+
+        }else if($option === 'confirm'){ 
             $this->validate($request, [
                 'cash-amount' => 'required|max:255',
                 'total-amount' => 'required|max:255',
                 'cash-change' => 'required|max:255',
+                'item_id' => 'required|max:255',
+                ], [
+                'item_id.required' => 'No item added.'
                 ]);
 
             $data = [
@@ -108,69 +103,33 @@ class Transaction_Controller extends Controller
                 'total_amount' => $request['cash-amount']
                 ];
 
+            $item_id = array_map('intval', explode(',', $request->item_id));
+
             $payment = array(
                 'item' => DB::table('item')
-                ->select('id', 'amount as item_amount', DB::raw('0 as amount'))
-                ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id'], 'option'=>1]),
-                'balance' => DB::table('payment as a')
-                ->select('c.id', DB::raw('sum(b.amount) as amount'), DB::raw('c.amount as item_amount'))
-                ->join('payment_item as b','a.id','b.payment_id')
-                ->rightJoin('item as c', 'c.id', 'b.item_id')
-                ->where(['c.option'=> 1, 'c.sy_id'=>$data['sy_id'], 'c.semester_id'=>$data['semester_id']])
-                ->where(function($q) use ($data) {
-                      $q->where('a.student_id', $data['student_id'])
-                        ->orWhereNull('a.student_id');
-                  })
-                ->groupBy(DB::raw('c.id, c.amount'))
+                ->whereIn('id', $item_id)
+                ->get()
                 );
-
-            if($payment['balance']->get()->isEmpty()){
-                $payment['balance'] = $payment['item'];
-            }
-            
-            foreach ($payment['balance']->get() as $key => $value) {
-                $balance[$key]['item_id'] = $value->id;
-                $balance[$key]['balance'] = $value->item_amount - $value->amount;
-                $percentage += $balance[$key]['balance'];
-            }
-
-            if(round(floatval($data['total_amount']), 15) == 0 || round(floatval($percentage), 15) == 0){
-                return 'true';
-            }
-
-            if(round(floatval($data['total_amount']), 15) >= round(floatval($percentage), 15)){
-                $percentage = 1;
-            }else{
-                $percentage = round(floatval($data['total_amount']), 15)/round(floatval($percentage), 15);
-            }
-            $total = 0;
-
-            // foreach ($balance as $key => $value) {
-            //     $result[$key]['item_id'] = $value['item_id'];
-            //     $result[$key]['payment_id'] = 0;
-            //     $result[$key]['quantity'] = 1;
-            //     $result[$key]['size'] = 'S';
-            //     $result[$key]['amount'] = intval($value['balance'] * $percentage);
-            //     $total += $result[$key]['amount'];
-            // }
-
-            // dd($result, $total);
     
             $insert = DB::table('payment')
-            ->insertGetId($data);
+            ->insertGetId($data);            
 
-            foreach ($balance as $key => $value) {
-                $result[$key]['item_id'] = $value['item_id'];
+            foreach ($payment['item'] as $key => $value) {
+                $result[$key]['item_id'] = $value->id;
                 $result[$key]['payment_id'] = $insert;
                 $result[$key]['quantity'] = 1;
                 $result[$key]['size'] = 'S';
-                $result[$key]['amount'] = $value['balance'] * $percentage;
+                $result[$key]['amount'] = $value->amount;
             }
 
             $insertItem = DB::table('payment_item')
-            ->insert($result);
+            ->insert($result);            
 
-            echo json_encode($insert);
+            $data = array(
+                'link' => '/transaction/history?student-id='.$data['student_id'].'&semester='.$data['semester_id'].'&academicYear='.$data['sy_id'].'&studentID='.$data['student_id']
+                );
+
+            echo json_encode($data);
         }else if($option === "history"){
             $data = [
                 'sy_id' => $request->academicYear,
@@ -192,6 +151,51 @@ class Transaction_Controller extends Controller
                 $result[$key][] = $value->total_amount;
                 $result[$key][] = $value->cashier_id;
                 $result[$key][] = $value->id;
+            }
+
+            $table_data = array(
+                "draw" => 1,
+                "recordsTotal" => count($result),
+                "recordsFiltered" => count($result),
+                'data' => $result, 
+                );
+
+            echo json_encode($table_data);
+        }else if($option === 'unpaid'){            
+            $data = [
+                'sy_id' => $request->academicYear,
+                'semester_id' => $request->semester,
+                'student_id' => $request['student-id']
+                ];
+
+            $previousPayment = DB::table('payment as a')
+            ->select('b.item_id')
+            ->join('payment_item as b', 'a.id', '=', 'b.payment_id')
+            ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id'], 'student_id'=>$data['student_id']])
+            ->get();
+
+            foreach ($previousPayment as $key => $value) {
+                $result[] = $value->item_id;
+            }
+
+            $unpaid = DB::table('item')
+            ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id']])
+            ->whereNotIn('id', $result)
+            ->get();
+
+            $result = array();
+            
+            if($unpaid){
+                foreach ($unpaid as $key => $value) {
+                    $result[$key][] = $value->id;
+                    $result[$key][] = $value->description;
+                    $result[$key][] = $value->amount;
+                    if($value->option === 1){
+                        $result[$key][] = "Mandatory";
+                    }else if($value->option === 0){
+                        $result[$key][] = "Optional";
+                    }
+                }
             }
 
             $table_data = array(

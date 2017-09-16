@@ -44,9 +44,10 @@ class Report_Controller extends Controller
 
     public function report($option = null){
     	if($option === 'receipt'){
+            $data = array();
     		$list = array(
     			'payment' => DB::table('payment as a')
-    			->select('a.id', 'a.invoice_number', 'b.first_name', 'b.last_name', 'a.created_date', 'a.sy_id', 'a.semester_id', 'a.total_amount', 'c.id as course_id')
+    			->select('a.id', 'a.invoice_number', 'b.name', 'a.created_date', 'a.sy_id', 'a.semester_id', 'a.total_amount', 'c.id as course_id')
                 ->join('student as b', 'a.student_id', 'b.id')
     			->join('course as c', 'b.course_id', 'c.id')
     			->get(), 
@@ -59,7 +60,7 @@ class Report_Controller extends Controller
                     $data[$key][] = $value->sy_id;
 	                $data[$key][] = $value->course_id;
 	                $data[$key][] = $value->invoice_number;
-	                $data[$key][] = $value->first_name.' '.$value->last_name;
+	                $data[$key][] = $value->name;
 	                $data[$key][] = $value->total_amount;
 	                $data[$key][] = $value->created_date;
 		        }

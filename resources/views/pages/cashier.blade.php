@@ -3,13 +3,17 @@
 @section('sidebar')
 <ul class="sidebar-menu">
   <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
-  <li><a href="{{ route('transaction')}}"><i class="fa fa-pie-chart"></i><span>Transaction</span></a></li>
-  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Records</span><i class="fa fa-angle-right"></i></a>
+  <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
+  <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
       <li><a href="{{ route('students')}}"><i class="fa fa-circle-o"></i> Student</a></li>
       <li><a href="{{ route('cashiers')}}"><i class="fa fa-circle-o"></i> Cashier</a></li>
-      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Items</a></li>
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Reports</span></a></li>
+      <li><a href="{{ route('items')}}"><i class="fa fa-circle-o"></i> Item</a></li>
+    </ul>
+  </li>
+  <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
     </ul>
   </li>
 </ul>
