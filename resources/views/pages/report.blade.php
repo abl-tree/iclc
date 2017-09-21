@@ -42,7 +42,7 @@
         <a id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
       </div>
     </div>
-        <div class="row">
+      <div class="row">
       <div class="col-md-12">
         <div class="card">
           <div class="card-body">
@@ -251,9 +251,13 @@
       $('#sampleTable').DataTable().column(2).search($(this).val()).draw();
     });
 
-    $('select[name="course"]').change(function(){
+    $('select[name="course"]').on('change', function(){
       $('#sampleTable').DataTable().column(3).search($(this).val()).draw();
     });
+
+    if($("select[name='course'] option")>2){
+      $("select[name='course'] option:last").prop('selected', 'selected').trigger('change');
+    }
 
   });
   // $($('#sampleTable').DataTable().column(3).footer()).text('321312');

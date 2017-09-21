@@ -84,7 +84,10 @@ class Item_Controller extends Controller
         if($item){
         	foreach ($item as $key => $value) {
                 $data[$key][] = $item[$key]->id;
+                $data[$key][] = $item[$key]->semester_id;
+                $data[$key][] = $item[$key]->department_id;
 	            $data[$key][] = $item[$key]->description;
+                $data[$key][] = $item[$key]->amount;
                 $data[$key][] = $item[$key]->amount;
                 if($item[$key]->option === 1){
                     $data[$key][] = "Mandatory";

@@ -162,7 +162,7 @@
 </div> 
 
 
-<!-- Update Item Modal -->
+<!-- Update Student Modal -->
 
 <div id="update_student" class="modal fade update_student">
   <div class="modal-dialog">
@@ -176,22 +176,22 @@
           <div class="card-body">
               {{ csrf_field() }}
               <input type="hidden" name="student_id">
-              <div class="form-group{{ $errors->has('studNum') ? ' has-error' : '' }}">
+              <div class="form-group{{ $errors->has('update-studNum') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Student No.</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" placeholder="Enter Student Number" id="studNum" name="studNum" value="{{ old('studNum') }}" required autofocus>
+                  <input class="form-control" type="text" placeholder="Enter Student Number" id="update-studNum" name="update-studNum" value="{{ old('update-studNum') }}" required autofocus>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('studName') ? ' has-error' : '' }}">
+              <div class="form-group{{ $errors->has('update-studName') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Name</label>
                 <div class="col-md-8">
-                  <input class="form-control" type="text" placeholder="Enter Student Name" id="studName" name="studName" value="{{ old('studName') }}" required>
+                  <input class="form-control" type="text" placeholder="Enter Student Name" id="update-studName" name="update-studName" value="{{ old('update-studName') }}" required>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('studCourse') ? ' has-error' : '' }}">       
+              <div class="form-group{{ $errors->has('update-studCourse') ? ' has-error' : '' }}">       
                 <label class="control-label col-md-3">Course</label>         
                 <div class="col-md-8">
-                  <select class="form-control report" type="text" name="studCourse" required>
+                  <select class="form-control report" type="text" name="update-studCourse" required>
                     <option disabled="true">Course</option>
                     @if(!empty($course))
                       @foreach($course as $index=>$data)
@@ -202,10 +202,10 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('update_studYear') ? ' has-error' : '' }}">       
+              <div class="form-group{{ $errors->has('update-studYear') ? ' has-error' : '' }}">       
                 <label class="control-label col-md-3">Year</label>         
                 <div class="col-md-8">
-                  <select class="form-control report" type="text" name="update_studYear" required>
+                  <select class="form-control report" type="text" name="update-studYear" required>
                     <option value="1">1st Year</option>
                     <option value="2">2nd Year</option>
                     <option value="3">3rd Year</option>
@@ -213,7 +213,7 @@
                   </select>
                 </div>
               </div>
-              <div class="form-group{{ $errors->has('studGender') ? ' has-error' : '' }}">
+              <div class="form-group{{ $errors->has('update-studGender') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Gender</label>
                 <div class="col-md-9">
                   <div class="radio-inline">
@@ -393,7 +393,10 @@ $(document).ready(function(){
 
   $('#delete-selected-row').click(function(){       
     // table.rows('.selected').remove().draw(false);
-    console.log(table.rows('.selected').data());
+    var ids = $.map(table.rows('.selected').data(), function (item) {
+        return item[0]
+    });
+    console.log(ids);
   })
 
   $('#add-student-form').submit(function(e){
@@ -420,19 +423,18 @@ $(document).ready(function(){
 
 $('#update-student-form').submit(function(e){
     e.preventDefault();
+    console.log($(this).serialize());
+
     $.ajax({
           type: "POST",
-          url: "/students/update",
+          url: "/student/update",
           data: $(this).serialize(),
           success: function(data){   
             console.log(data);
             swal({
-            title:"Updated!", 
-            text:"Student has been updated to the database.", 
-            type:"success"},
-            function(){
-                $('#update_student').modal("hide");
-                $('#dynamic').load("/student");
+              title:"Updated!", 
+              text:"Student has been updated to the database.", 
+              type:"success"
             });
           },  
           error: function(e) {
@@ -507,8 +509,8 @@ $('#delete-student-form').submit(function(e){
 
     $.getJSON(url, function(data){
       $('input[name="student_id"]').val(data[0].id);
-      $('input[name="studNum"]').val(data[0].student_number);
-      $('input[name="studName"]').val(data[0].name);
+      $('input[name="update-studNum"]').val(data[0].student_number);
+      $('input[name="update-studName"]').val(data[0].name);
       $('input[name="update-studGender"][value="'+data[0].gender+'"]').prop('checked', true);
       $('select[name="studCourse"]').val(data[0].course_id);
       $('select[name="update_studYear"]').val(data[0].year);
@@ -516,11 +518,7 @@ $('#delete-student-form').submit(function(e){
   })
 
   $('.update_student').on('hidden.bs.modal', function(e){
-      $('input[name="student_id"]').val('');
-      $('input[name="studNum"]').val('');
-      $('input[name="studName"]').val('');
-      $('select[name="studCourse"]').val(1);
-      $('select[name="update_studYear"]').val(1);
+      $('#update-student-form')[0].reset();
   })
 
   $('input[name="file"]').change(function(){

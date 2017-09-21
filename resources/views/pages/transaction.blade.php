@@ -56,7 +56,7 @@
                         <option value="{{$data->id}}">{{$data->description}}</option>
                         @endforeach
                       @endif
-                      <option value="add">Add</option>
+                      <option class="acad-add" value="add">Add</option>
                     </select>
                   </div>
                 </div>            
@@ -145,22 +145,16 @@
                     <tr>
                       <th>OR #</th>
                       <th>Date</th>
-                      <th>Academic Year</th>
-                      <th>Semester</th>
                       <th>Total Payment</th>
                       <th>Cashier</th>
-                      <th>Options</th>
                     </tr>
                   </thead>
                   <tfoot>
                     <tr>
                       <th>OR #</th>
                       <th>Date</th>
-                      <th>Academic Year</th>
-                      <th>Semester</th>
                       <th>Total Payment</th>
                       <th>Cashier</th>
-                      <th>Options</th>
                     </tr>
                   </tfoot>
             </table>
@@ -341,7 +335,15 @@
 <script src="{{ asset('js/plugins/DataTable_Button/js/select.dataTable.min.js') }}"></script>
 <script>
   $(document).ready(function(){
-    var table = $('#payment-history').DataTable();    
+    var table = $('#payment-history').DataTable({
+      "columnDefs": [
+        {
+            "targets": [ 0 ],
+            "visible": false,
+            "searchable": false
+        }
+      ]
+    });    
     var item_table = $('#itemTable').DataTable({
                 select: true,
                 select: {
@@ -447,6 +449,8 @@
           $('select[name="semester"]').removeAttr('disabled');
           if($('input[name="student-id"]').val()){
             $('#student-info').submit();
+            $('input[name="total-amount"]').val('');
+            $('input[name="cash-change"]').val('');
           }
       }
     });
@@ -488,6 +492,8 @@
       }else{
           $('input[name="studentID"]').removeAttr('disabled');
           if($('input[name="student-id"]').val()){
+            $('input[name="total-amount"]').val('');
+            $('input[name="cash-change"]').val('');
             $('#student-info').submit();
           }
       }
@@ -495,6 +501,9 @@
 
     $('#student-info').submit(function(e){
       e.preventDefault();
+      if(!$('#student-info #submitBttn').hasClass('disabled')){
+        $('#student-info #submitBttn').addClass('disabled');
+      }
 
       $.ajax({
         type: 'GET',
@@ -502,7 +511,18 @@
         data: $(this).serialize(),
         url: '/transaction/payment',
         success: function(data){
+          if($('#student-info #submitBttn').hasClass('disabled')){
+            $('#student-info #submitBttn').removeClass('disabled');
+          }
+
           table.ajax.url(data.link).load();
+          var data = $('#student-info').serialize();
+          var total = 0;
+
+          console.log(data);
+
+          item_table.ajax.url('/transaction/unpaid?'+data).load();
+          $('.item_total span').text('PHP '+total);
         },
         error: function(){
           $('input[name="total-amount"]').val('');
@@ -666,9 +686,6 @@
     })
 
     $('#add_item_modal').on('shown.bs.modal', function(){
-      var data = $('#student-info').serialize();
-
-      item_table.ajax.url('/transaction/unpaid?'+data).load();
     })
 
   });

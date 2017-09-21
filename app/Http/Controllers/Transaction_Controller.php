@@ -91,7 +91,7 @@ class Transaction_Controller extends Controller
                 'cash-change' => 'required|max:255',
                 'item_id' => 'required|max:255',
                 ], [
-                'item_id.required' => 'No item added.'
+                'item_id.required' => 'No item selected.'
                 ]);
 
             $data = [
@@ -138,19 +138,19 @@ class Transaction_Controller extends Controller
                 'student_number' => $request->studentID
                 ];
             $list = array(
-                'receipt' => DB::table('payment')
+                'receipt' => DB::table('payment as a')
                 ->where(['sy_id'=>$data['sy_id'], 'semester_id'=>$data['semester_id'], 'student_id'=>$data['student_id']])
+                ->join('cashier_profile as b', 'a.cashier_id', 'b.user_id')
                 ->get(), 
                 );
 
             foreach ($list['receipt'] as $key => $value) {
                 $result[$key][] = $value->invoice_number;
                 $result[$key][] = $value->created_date;
-                $result[$key][] = $value->sy_id;
-                $result[$key][] = $value->semester_id;
                 $result[$key][] = $value->total_amount;
-                $result[$key][] = $value->cashier_id;
-                $result[$key][] = $value->id;
+                $full_name = $value->first_name.' '.$value->last_name;
+                $position = '('.$value->position.')';
+                $result[$key][] = $full_name.' '.$position;
             }
 
             $table_data = array(

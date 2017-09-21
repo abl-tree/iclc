@@ -41,11 +41,43 @@
     <div class="row">
       <div class="col-md-12">
         <div class="card">
+          <div class="row">            
+            <div class="col-md-12">      
+              <label class="control-label col-md-3">Filter by:</label>         
+            </div>
+            <div class="filters form-group{{ $errors->has('academicYear') ? ' has-error' : '' }}">    
+              <div class="col-md-3">
+                <select class="form-control report" type="text" name="academicYear" required>
+                  <option value="" disabled="true" selected>Academic Year</option>
+                  <option value="">All</option>
+                  @if(!empty($acadyear))
+                    @foreach($acadyear as $index=>$data)
+                    <option value="{{$data->id}}">{{$data->description}}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>                       
+              <div class="col-md-3">
+                <select class="form-control report" type="text" name="semester" required>
+                  <option value="" disabled="true" selected>Semester</option>
+                  <option value="">All</option>
+                  @if(!empty($semester))
+                    @foreach($semester as $index=>$data)
+                    <option value="{{$data->id}}">{{$data->description}}</option>
+                    @endforeach
+                  @endif
+                </select>
+              </div>
+            </div>
+          </div>
+          </br>
           <div class="card-body">
             <table class="table table-hover table-bordered" id="itemTable" style="width: 100%;">
                 <thead>
                   <tr>
                     <th hidden>ID</th>
+                    <th hidden>Semester</th>
+                    <th hidden>Department</th>
                     <th>Name</th>
                     <th>Amount</th>
                     <th>Status</th>
@@ -54,6 +86,8 @@
                 <tfoot>
                   <tr>
                     <th hidden>ID</th>
+                    <th hidden>Semester</th>
+                    <th hidden>Department</th>
                     <th>Name</th>
                     <th>Amount</th>
                     <th>Status</th>
@@ -387,6 +421,14 @@ $(document).ready(function(){
                     "targets": [ 0 ],
                     "visible": false,
                     "searchable": false
+                },
+                {
+                    "targets": [ 1 ],
+                    "visible": false
+                },
+                {
+                    "targets": [ 2 ],
+                    "visible": false
                 }
               ]
             });
@@ -672,7 +714,17 @@ $(document).ready(function(){
   $('#update_item').on('hidden.bs.modal', function(e){
     $('#update-item-form')[0].reset();
   })
-  
+
+  $('select[name="semester"]').change(function(){
+    table.column(1).search($(this).val()).draw();
+  });
+
+  $('select[name="academicYear"]').change(function(){
+    table.column(2).search($(this).val()).draw();
+  });  
+
+  $('.filters select[name="academicYear"] option:last').prop('selected', 'selected').trigger('change');
+
 });
 
 </script>

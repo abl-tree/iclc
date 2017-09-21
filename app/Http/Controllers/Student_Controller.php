@@ -92,6 +92,26 @@ class Student_Controller extends Controller
             echo json_encode($insert);
     	}else if($option === 'upload'){
             $this->upload();
+        }else if($option === 'update'){
+            $this->validate($request, [
+                'student_id' => 'required|max:255',
+                'update-studNum' => 'required|max:255',
+                'update-studName' => 'required|max:255',
+                'update-studCourse' => 'required|max:255',
+                'update-studYear' => 'required|max:255',
+                'update-studGender' => 'required|max:255',
+            ]);
+
+            $data = array(
+                'id' => $request->student_id, 
+                'id_number' => $request['update-studNum'], 
+                'name' => $request['update-studName'], 
+                'course' => $request['update-studCourse'], 
+                'year' => $request['update-studYear'], 
+                'gender' => $request['update-studCourse']
+            );
+
+            dd($data);
         }
     }
 
