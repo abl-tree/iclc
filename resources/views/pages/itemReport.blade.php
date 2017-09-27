@@ -86,6 +86,17 @@
                       @endforeach
                     @endif
                   </select>
+                </div>               
+                <div class="col-md-3">
+                  <select class="form-control report" type="text" name="department" required>
+                    <option value="" disabled="true" selected>Department</option>
+                    <option value="">All</option>
+                    @if(!empty($department))
+                      @foreach($department as $index=>$data)
+                      <option value="{{$data->description}}">{{$data->description}}</option>
+                      @endforeach
+                    @endif
+                  </select>
                 </div>
               </div>
             </div>
@@ -96,9 +107,11 @@
                     <th hidden>ID #</th>
                     <th>Receipt No.</th>
                     <th>Name</th>
+                    <th>Item</th>
                     <th hidden>Semester</th>
                     <th hidden>Academic Year</th>
                     <th hidden>Course</th>
+                    <th hidden>Department</th>
                     <th>Amount</th>
                     <th>Date</th>
                   </tr>
@@ -108,9 +121,11 @@
                     <th hidden>ID #</th>
                     <th>Receipt No.</th>
                     <th>Name</th>
+                    <th>Item</th>
                     <th hidden>Semester</th>
                     <th hidden>Academic Year</th>
                     <th hidden>Course</th>
+                    <th hidden>Department</th>
                     <th>Amount</th>
                     <th>Date</th>
                   </tr>
@@ -169,7 +184,7 @@
           //   enabled: false
           // }
       ],
-      "ajax": "/report/receipt",    
+      "ajax": "/report/item",    
       "columnDefs": [
           {
               "targets": [ 0 ],
@@ -177,15 +192,19 @@
               "searchable": false
           },
           {
-              "targets": [ 3 ],
-              "visible": false
-          },
-          {
               "targets": [ 4 ],
               "visible": false
           },
           {
               "targets": [ 5 ],
+              "visible": false
+          },
+          {
+              "targets": [ 6 ],
+              "visible": false
+          },
+          {
+              "targets": [ 7 ],
               "visible": false
           }
       ],
@@ -235,15 +254,19 @@
     })
 
     $('select[name="semester"]').change(function(){
-      $('#sampleTable').DataTable().column(3).search($(this).val()).draw();
-    });
-
-    $('select[name="academicYear"]').change(function(){
       $('#sampleTable').DataTable().column(4).search($(this).val()).draw();
     });
 
-    $('select[name="course"]').on('change', function(){
+    $('select[name="academicYear"]').change(function(){
       $('#sampleTable').DataTable().column(5).search($(this).val()).draw();
+    });
+
+    $('select[name="course"]').on('change', function(){
+      $('#sampleTable').DataTable().column(6).search($(this).val()).draw();
+    });
+
+    $('select[name="department"]').on('change', function(){
+      $('#sampleTable').DataTable().column(7).search($(this).val()).draw();
     });
    
     $('select[name="academicYear"] option:last').prop('selected', 'selected').trigger('change');

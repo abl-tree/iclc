@@ -13,7 +13,10 @@
   </li>
   <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Receipt</span></a></li>
+    </ul>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('item-reports')}}"><i class="fa fa-circle-o"></i><span>Item</span></a></li>
     </ul>
   </li>
 </ul>
@@ -49,7 +52,7 @@
               <div class="col-md-3">
                 <select class="form-control report" type="text" name="academicYear" required>
                   <option value="" disabled="true" selected>Academic Year</option>
-                  <option value="">All</option>
+                  <option value="*">All</option>
                   @if(!empty($acadyear))
                     @foreach($acadyear as $index=>$data)
                     <option value="{{$data->id}}">{{$data->description}}</option>
@@ -60,7 +63,7 @@
               <div class="col-md-3">
                 <select class="form-control report" type="text" name="semester" required>
                   <option value="" disabled="true" selected>Semester</option>
-                  <option value="">All</option>
+                  <option value="*">All</option>
                   @if(!empty($semester))
                     @foreach($semester as $index=>$data)
                     <option value="{{$data->id}}">{{$data->description}}</option>
@@ -80,7 +83,7 @@
                     <th hidden>Department</th>
                     <th>Name</th>
                     <th>Amount</th>
-                    <th>Status</th>
+                    <th>Mandatory</th>
                   </tr>
                 </thead>
                 <tfoot>
@@ -90,7 +93,7 @@
                     <th hidden>Department</th>
                     <th>Name</th>
                     <th>Amount</th>
-                    <th>Status</th>
+                    <th>Mandatory</th>
                   </tr>
                 </tfoot>
             </table>
@@ -213,6 +216,7 @@
       <div class="modal-body">
           <div class="card-body">
               {{ csrf_field() }}
+              <input type="hidden" name="update-item-id">
               <div class="form-group{{ $errors->has('update-item-name') ? ' has-error' : '' }}">
                 <label class="control-label col-md-3">Name</label>
                 <div class="col-md-8">
@@ -465,8 +469,47 @@ $(document).ready(function(){
       }
   } );
 
-  $('#delete-selected-row').click(function(){       
-    table.rows('.selected').remove().draw(false);
+  $('#delete-selected-row').click(function(){  
+    var ids = $.map(table.rows('.selected').data(), function (data) {
+                  return data[0]
+              });    
+
+    var data = $('#update-item-form').serializeArray();
+    data.push({name: 'item_id', value: ids});
+
+    swal({
+      title: "Are you sure?",
+      text: "The item will be deleted in the database!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel it!",
+      closeOnConfirm: true,
+      closeOnCancel: false
+    }, function(isConfirm) {
+      if (isConfirm) {        
+        $.ajax({
+            url: '/item/delete',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(data){
+              table.rows('.selected').remove().draw(false);  
+              swal({
+                title:"Deleted!", 
+                text:"Item has been deleted.", 
+                type:"success"
+              }); 
+            }
+          })   
+      } else {
+        swal({
+          title:"Cancelled!", 
+          text:"Item is safe :)", 
+          type:"error"
+        });
+      }
+    });
   })
 
   $('#add-semester-form').submit(function(e){
@@ -479,11 +522,18 @@ $(document).ready(function(){
           dataType: 'json',
           success: function(data){
             console.log(data.name);
-            if(data)
-            $('<option>')
-                .text(data.name)
-                .attr('value', data.id)
-                .insertBefore($('option[value="add"]', $('select[name="semester"]')));
+            if(data){
+                $('<option>')
+                    .text(data.name)
+                    .attr('value', data.id)
+                    .insertBefore($('option[value="add"]', $('select[name="semester"]')));
+                $('.filters select[name="semester"] ').append($('<option>', {
+                    value: data.id,
+                    text: data.name
+                }));
+
+                $('select[name="semester"] ').val(data.id);
+            }
 
             swal({
             title:"Added!", 
@@ -503,6 +553,13 @@ $(document).ready(function(){
     if ($(this).val() == 'add'){      
         $('#semester_modal').modal('show');
         $(this).val('');
+    }else {
+        var val = $(this).val();
+
+        $('.filters select[name="semester"]').val(val);
+        if(val === '*')
+          table.column(1).search('').draw();
+        else table.column(1).search(val).draw();
     }
   });
 
@@ -516,12 +573,14 @@ $(document).ready(function(){
           dataType: 'json',
           success: function(data){
             console.log(data.name);
-            if(data)
-            $('<option>')
-                .text(data.name)
-                .attr('value', data.id)
-                .insertBefore($('option[value="add"]', $('select[name="department"]')));
+            if(data){
+                $('<option>')
+                    .text(data.name)
+                    .attr('value', data.id)
+                    .insertBefore($('option[value="add"]', $('select[name="department"]')));
 
+                $('select[name="department"]').val(data.id);
+            }
             swal({
             title:"Added!", 
             text:"Course has been added to the database.", 
@@ -553,11 +612,18 @@ $(document).ready(function(){
           dataType: 'json',
           success: function(data){
             console.log(data.name);
-            if(data)
-            $('<option>')
-                .text(data.name)
-                .attr('value', data.id)
-                .insertBefore($('option[value="add"]', $('select[name="academicYear"]')));
+            if(data){
+                $('<option>')
+                    .text(data.name)
+                    .attr('value', data.id)
+                    .insertBefore($('option[value="add"]', $('select[name="academicYear"]')));
+                $('.filters select[name="academicYear"] ').append($('<option>', {
+                    value: data.id,
+                    text: data.name
+                }));
+
+                $('select[name="academicYear"] ').val(data.id);
+            }
 
             swal({
             title:"Added!", 
@@ -577,59 +643,17 @@ $(document).ready(function(){
     if ($(this).val() == 'add'){      
         $('#acadyear_modal').modal('show');
         $(this).val('');
+    }else{      
+        var val = $(this).val();
+
+        $('.filters select[name="academicYear"] ').val(val);
+        if(val === '*')
+          table.column(2).search('').draw();
+        else table.column(2).search(val).draw();
     }
   });
 
-  // $('#add_item').on('hidden.bs.modal', function(e){
-  //   alert('closed');
-  // });
-
-  $('#delete-item-form').submit(function(e){
-    swal({
-      title: "Are you sure?",
-      text: "The item will be deleted in the database!",
-      type: "warning",
-      showCancelButton: true,
-      confirmButtonText: "Yes, delete it!",
-      cancelButtonText: "No, cancel it!",
-      closeOnConfirm: false,
-      closeOnCancel: false
-    }, function(isConfirm) {
-      if (isConfirm) {
-        $.ajax({
-              type: "POST",
-              url: "/items/delete",
-              data: $("#delete-item-form").serialize(),
-              success: function(data){   
-                console.log(data);           
-                swal({
-                  title:"Deleted!", 
-                  text:"Item has been updated.", 
-                  type:"success"},
-                  function(){
-                      $('#delete_item').modal("hide");
-                      $('#dynamic').load("/items");
-                });
-              },  
-              error: function(e) {
-                console.log("----------" + e);
-              }
-        });
-      
-      } else {
-        swal({
-          title:"Cancelled!", 
-          text:"Item is safe :)", 
-          type:"error"},
-          function(){
-              $('#delete_item').modal("hide");
-          });
-      }
-    });
-  });
-
   $('#update-item-form').submit(function(e){
-
     e.preventDefault();
 
     swal({
@@ -639,13 +663,13 @@ $(document).ready(function(){
       showCancelButton: true,
       confirmButtonText: "Yes, update it!",
       cancelButtonText: "No, cancel it!",
-      closeOnConfirm: false,
+      closeOnConfirm: true,
       closeOnCancel: false
     }, function(isConfirm) {
       if (isConfirm) {        
         $.ajax({
           type: "POST",
-          url: "/items/update",
+          url: "/item/update",
           data: $("#update-item-form").serialize(),
           success: function(data){   
             console.log(data);           
@@ -655,7 +679,7 @@ $(document).ready(function(){
               type:"success"},
               function(){
                   $('#update_item').modal("hide");
-                  $('#dynamic').load("/items");
+                  table.ajax.reload();
             });
           },  
           error: function(e) {
@@ -685,6 +709,7 @@ $(document).ready(function(){
       dataType: 'json',
       success: function(data){
         table.ajax.url('/itemlist').load();
+        $('.filters select[name="academicYear"] option:last').prop('selected', 'selected').trigger('change');
 
         swal({
         title:"Added!", 
@@ -705,6 +730,8 @@ $(document).ready(function(){
     var url = "/item/search/"+id;
 
     $.getJSON(url, function(data){
+      console.log(data);
+      $('input[name="update-item-id"]').val(data[0].id);
       $('input[name="update-item-name"]').val(data[0].description);
       $('input[name="update-item-price"]').val(data[0].amount);
       $('input[name="update-item-status"][value="'+data[0].option+'"]').prop('checked', true);;
@@ -714,14 +741,6 @@ $(document).ready(function(){
   $('#update_item').on('hidden.bs.modal', function(e){
     $('#update-item-form')[0].reset();
   })
-
-  $('select[name="semester"]').change(function(){
-    table.column(1).search($(this).val()).draw();
-  });
-
-  $('select[name="academicYear"]').change(function(){
-    table.column(2).search($(this).val()).draw();
-  });  
 
   $('.filters select[name="academicYear"] option:last').prop('selected', 'selected').trigger('change');
 

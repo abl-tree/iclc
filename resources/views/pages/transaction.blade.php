@@ -19,7 +19,10 @@
   </li>
   <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Receipt</span></a></li>
+    </ul>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('item-reports')}}"><i class="fa fa-circle-o"></i><span>Item</span></a></li>
     </ul>
   </li>
 </ul>
@@ -114,7 +117,7 @@
               <div class="form-group">
                 <label class="control-label col-md-3">Cash</label>
                 <div class="col-md-8">
-                  <input id="cash-amount" name="cash-amount" type="number" autocomplete="off" class="form-control col-md-8" type="text" placeholder="Enter Amount" required>
+                  <input id="cash-amount" name="cash-amount" type="number" autocomplete="off" class="form-control col-md-8" type="text" readonly placeholder="Enter Amount" required>
                 </div>
               </div>
               <div id="changeDIV" class="form-group">
@@ -128,7 +131,7 @@
             <div class="row">
               <div class="col-md-8 col-md-offset-4">
                 <div class="btn-group">
-                  <button id="submitBttn" class="btn btn-primary icon-btn" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
+                  <button id="submitBttn" class="btn btn-primary icon-btn disabled" type="submit"><i class="fa fa-fw fa-lg fa-check-circle"></i>Submit</button>
                 </div>
               </div>
             </div>
@@ -317,6 +320,89 @@
       </div> 
       <!-- End Add Item Modal -->
 
+      <!-- Add Receipt Modal -->
+      <div id="receipt_modal" class="modal fade">
+        <div class="modal-dialog">
+          <div class="modal-content">       
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+              <h3 class="modal-title">Receipt</h3>
+            </div>
+            <div class="modal-body">
+              <div class="row">
+              <div class="col-md-12">
+                <div class="card">
+                    <section class="invoice">
+                      <div class="row">
+                        <div class="col-xs-12">
+                          <h2 class="page-header"><i class="fa fa-globe"></i> Vali<small class="pull-right">Date: 01/01/2016</small></h2>
+                        </div>
+                      </div>
+                      <div class="row invoice-info">
+                        <div class="col-xs-4">From
+                          <address><strong>Vali Ltd.</strong><br>518 Akshar Avenue<br>Gandhi Marg<br>New Delhi<br>Email: hello@vali.com</address>
+                        </div>
+                        <div class="col-xs-4">To
+                          <address><strong>John Doe</strong><br>            795 Folsom Ave, Suite 600<br>            San Francisco, CA 94107<br>            Phone: (555) 539-1037<br>            Email: john.doe@example.com</address>
+                        </div>
+                        <div class="col-xs-4"><b>Invoice #007612</b><br><br><b>Order ID:</b> 4F3S8J<br><b>Payment Due:</b> 2/22/2014<br><b>Account:</b> 968-34567</div>
+                      </div>
+                      <div class="row">
+                        <div class="col-xs-12 table-responsive">
+                          <table class="table table-striped">
+                            <thead>
+                              <tr>
+                                <th>Qty</th>
+                                <th>Product</th>
+                                <th>Serial #</th>
+                                <th>Description</th>
+                                <th>Subtotal</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              <tr>
+                                <td>1</td>
+                                <td>Call of Duty</td>
+                                <td>455-981-221</td>
+                                <td>El snort testosterone trophy driving gloves handsome</td>
+                                <td>$64.50</td>
+                              </tr>
+                              <tr>
+                                <td>1</td>
+                                <td>Need for Speed IV</td>
+                                <td>247-925-726</td>
+                                <td>Wes Anderson umami biodiesel</td>
+                                <td>$50.00</td>
+                              </tr>
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="row hidden-print mt-20">
+                        <div class="col-xs-12 text-right"><a class="btn btn-primary" href="javascript:window.print();" target="_blank"><i class="fa fa-print"></i> Print</a></div>
+                      </div>
+                    </section>
+                </div>
+              </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+                <div class="card-footer">
+                  <div class="row">
+                    <div class="col-md-4 text-left item_total">
+                      <h5><strong>Total:</strong></h5><span>PHP 0</span>
+                    </div>
+                    <div class="col-md-8">
+                      <a class="btn btn-success icon-btn"  class="close" data-dismiss="modal"><i class="fa fa-fw fa-lg fa-check-circle"></i>Continue</a>
+                    </div>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div> 
+      <!-- End Receipt Modal -->
+
     </div>
   </div>
 </div>
@@ -398,6 +484,13 @@
             total += parseFloat(value[2]);
         })
 
+        if(item_table.rows('.selected').count() > 0){
+          $('input[name="cash-amount"]').attr('readonly', false);
+        }else{
+          if(!$('input[name="cash-amount"]').attr('readonly'))
+            $('input[name="cash-amount"]').attr('readonly', true)
+        }
+
         $('.item_total span').text('PHP '+total);
     } );
 
@@ -407,6 +500,13 @@
         $.each(rowData,function(key,value){
             total += parseFloat(value[2]);
         })
+
+        if(item_table.rows('.selected').count() > 0){
+          $('input[name="cash-amount"]').attr('readonly', false);
+        }else{
+          if(!$('input[name="cash-amount"]').attr('readonly'))
+            $('input[name="cash-amount"]').attr('readonly', true)
+        }
 
         $('.item_total span').text('PHP '+total);
     } );
@@ -535,11 +635,14 @@
       var fee = $('input[name="total-amount"]').val();
       var change = amount - fee;
 
-      if(amount)
-        $('input[name="cash-change"]').val(change);
+      $('input[name="cash-change"]').val(change);
 
-      if(!$(this).val()){
-        $('input[name="cash-change"]').val(0);
+      if(change < 0){
+          if(!$('#payment-info #submitBttn').hasClass('disabled'))
+            $('#payment-info #submitBttn').addClass('disabled');
+      }else{
+          if($('#payment-info #submitBttn').hasClass('disabled'))
+            $('#payment-info #submitBttn').removeClass('disabled');
       }
     });
 
@@ -553,6 +656,7 @@
       var data = $('#student-info, #payment-info').serializeArray();
       data.push({name: 'item_id', value: ids});
 
+      if($('input[name="cash-change"]').val()>=0)
       if($('input[name="student-id"]').val()){
         $.ajax({
           url: 'transaction/confirm',
@@ -571,6 +675,7 @@
 
             $('#payment-info')[0].reset();           
             item_table.rows().deselect();
+            item_table.ajax.reload();
           },
           error: function(xhr){
             var error = JSON.parse(xhr.responseText);
@@ -589,7 +694,15 @@
       }else{
         $.notify({
             title: "Error : ",
-            message: "Add student info!",
+            message: "Add student.",
+            icon: 'fa fa-check' 
+          },{
+            type: "warning"
+          });
+      }else{
+        $.notify({
+            title: "Error : ",
+            message: "Amount is not enough!",
             icon: 'fa fa-check' 
           },{
             type: "warning"
@@ -684,10 +797,6 @@
         }
       })
     })
-
-    $('#add_item_modal').on('shown.bs.modal', function(){
-    })
-
   });
 </script>
 @endsection

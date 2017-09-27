@@ -73,7 +73,39 @@ class Item_Controller extends Controller
                 );
                 echo json_encode($data);
             }
-    	}
+    	}else if($option === 'update'){
+            $this->validate($request, [
+                'update-item-id' => 'required|max:255',
+                'update-item-name' => 'required|max:255',
+                'update-item-price' => 'required|max:255',
+                'update-item-status' => 'required|max:255',
+                ]);
+
+            $data = [
+                'description' => $request['update-item-name'],
+                'amount' => $request['update-item-price'],
+                'option' => $request['update-item-status'],
+            ];
+
+            DB::table('item')
+            ->where('id', $request['update-item-id'])
+            ->update($data);
+
+            echo json_encode($data);
+        }else if($option === 'delete'){
+            $this->validate($request, [
+                'item_id' => 'required|max:255'
+                ]);
+
+            $item_id = array_map('intval', explode(',', $request->item_id));
+
+            $item = DB::table('item')
+                        ->whereIn('id', $item_id)
+                        ->delete();
+
+
+            echo json_encode($item);
+        }
     }
 
     public function item_list()
@@ -85,14 +117,13 @@ class Item_Controller extends Controller
         	foreach ($item as $key => $value) {
                 $data[$key][] = $item[$key]->id;
                 $data[$key][] = $item[$key]->semester_id;
-                $data[$key][] = $item[$key]->department_id;
+                $data[$key][] = $item[$key]->sy_id;
 	            $data[$key][] = $item[$key]->description;
                 $data[$key][] = $item[$key]->amount;
-                $data[$key][] = $item[$key]->amount;
                 if($item[$key]->option === 1){
-                    $data[$key][] = "Mandatory";
+                    $data[$key][] = "Yes";
                 }else if($item[$key]->option === 0){
-    	            $data[$key][] = "Optional";
+    	            $data[$key][] = "No";
                 }
 	            // $data[$key][] = $item[$key]->sy_id;
 	            // $data[$key][] = $item[$key]->semester_id;

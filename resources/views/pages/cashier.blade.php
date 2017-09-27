@@ -13,7 +13,10 @@
   </li>
   <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Receipt</span></a></li>
+    </ul>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('item-reports')}}"><i class="fa fa-circle-o"></i><span>Item</span></a></li>
     </ul>
   </li>
 </ul>

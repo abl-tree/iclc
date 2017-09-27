@@ -53,7 +53,8 @@ class Student_Controller extends Controller
                 $data[$key][] = $student[$key]->id;
 	            $data[$key][] = $student[$key]->student_number;
 	            $data[$key][] = $student[$key]->name;
-	            $data[$key][] = $student[$key]->gender;
+                $data[$key][] = $student[$key]->gender;
+	            $data[$key][] = $student[$key]->course;
 	            $data[$key][] = $student[$key]->year;
 	        }
         }
@@ -103,15 +104,30 @@ class Student_Controller extends Controller
             ]);
 
             $data = array(
-                'id' => $request->student_id, 
-                'id_number' => $request['update-studNum'], 
+                'student_number' => $request['update-studNum'], 
                 'name' => $request['update-studName'], 
-                'course' => $request['update-studCourse'], 
+                'course_id' => $request['update-studCourse'], 
                 'year' => $request['update-studYear'], 
-                'gender' => $request['update-studCourse']
+                'gender' => $request['update-studGender']
             );
 
-            dd($data);
+            $result = DB::table('student')
+                    ->where('id', $request->student_id)
+                    ->update($data);
+
+            echo json_encode($result);
+        }else if($option === 'delete'){
+            $this->validate($request, [
+                'student_id' => 'required|max:255'
+            ]);
+
+            $student_id = array_map('intval', explode(',', $request->student_id));
+
+            $student = DB::table('student')
+                        ->whereIn('id', $student_id)
+                        ->delete();
+
+            echo json_encode($student);
         }
     }
 
@@ -119,7 +135,10 @@ class Student_Controller extends Controller
         $data = array();
 
         if($table === 'student'){
-            return $data = DB::table($table)->get();
+            return $data = DB::table('student as a')
+                            ->select('a.*', 'b.name as course')
+                            ->join('course as b', 'a.course_id', '=', 'b.id')
+                            ->get();
         }else if($table === 'course'){
             return $data = DB::table($table)->get();
         }

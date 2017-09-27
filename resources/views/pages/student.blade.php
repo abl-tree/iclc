@@ -13,7 +13,10 @@
   </li>
   <li class="treeview"><a href="#"><i class="fa fa-file-text"></i><span>Report</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
-      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Payment</span></a></li>
+      <li><a href="{{ route('reports')}}"><i class="fa fa-circle-o"></i><span>Receipt</span></a></li>
+    </ul>
+    <ul class="treeview-menu">
+      <li><a href="{{ route('item-reports')}}"><i class="fa fa-circle-o"></i><span>Item</span></a></li>
     </ul>
   </li>
 </ul>
@@ -58,6 +61,7 @@
                     <th>ID #</th>
                     <th>Name</th>
                     <th>Gender</th>
+                    <th>Course</th>
                     <th>Year</th>
                   </tr>
                 </thead>
@@ -67,6 +71,7 @@
                     <th>ID #</th>
                     <th>Name</th>
                     <th>Gender</th>
+                    <th>Course</th>
                     <th>Year</th>
                   </tr>
                 </tfoot>
@@ -391,12 +396,47 @@ $(document).ready(function(){
       }
   } );
 
-  $('#delete-selected-row').click(function(){       
-    // table.rows('.selected').remove().draw(false);
-    var ids = $.map(table.rows('.selected').data(), function (item) {
-        return item[0]
+  $('#delete-selected-row').click(function(){  
+    var ids = $.map(table.rows('.selected').data(), function (data) {
+                  return data[0]
+              });    
+
+    var data = $('#update-student-form').serializeArray();
+    data.push({name: 'student_id', value: ids});
+
+    swal({
+      title: "Are you sure?",
+      text: "The student will be deleted in the database!",
+      type: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "No, cancel it!",
+      closeOnConfirm: true,
+      closeOnCancel: false
+    }, function(isConfirm) {
+      if (isConfirm) {        
+        $.ajax({
+            url: '/student/delete',
+            method: 'POST',
+            data: data,
+            dataType: 'json',
+            success: function(data){
+              table.rows('.selected').remove().draw(false);  
+              swal({
+                title:"Deleted!", 
+                text:"Student record has been deleted.", 
+                type:"success"
+              }); 
+            }
+          })   
+      } else {
+        swal({
+          title:"Cancelled!", 
+          text:"Student records are safe :)", 
+          type:"error"
+        });
+      }
     });
-    console.log(ids);
   })
 
   $('#add-student-form').submit(function(e){
@@ -431,6 +471,7 @@ $('#update-student-form').submit(function(e){
           data: $(this).serialize(),
           success: function(data){   
             console.log(data);
+            table.ajax.reload();
             swal({
               title:"Updated!", 
               text:"Student has been updated to the database.", 
@@ -512,8 +553,8 @@ $('#delete-student-form').submit(function(e){
       $('input[name="update-studNum"]').val(data[0].student_number);
       $('input[name="update-studName"]').val(data[0].name);
       $('input[name="update-studGender"][value="'+data[0].gender+'"]').prop('checked', true);
-      $('select[name="studCourse"]').val(data[0].course_id);
-      $('select[name="update_studYear"]').val(data[0].year);
+      $('select[name="update-studCourse"]').val(data[0].course_id);
+      $('select[name="update-studYear"]').val(data[0].year);
     });
   })
 

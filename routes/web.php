@@ -53,6 +53,7 @@ Route::get('/cashier/{option?}', 'Cashier_Controller@cashier');
 
 //report_controller
 Route::get('/report', 'Report_Controller@index') -> name('reports');
+Route::get('/report/by/item', 'Report_Controller@byitem') -> name('item-reports');
 Route::get('/report/{option?}', 'Report_Controller@report');
 
 // Route::get('/test', function(){
