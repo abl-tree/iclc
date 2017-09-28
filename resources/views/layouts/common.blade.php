@@ -18,7 +18,7 @@
   </head>
   <body class="sidebar-mini fixed">
     <!-- Navbar-->
-      <header class="main-header hidden-print"><a class="logo" href="{{ route('home')}}">ICLC System </a>
+      <header class="main-header hidden-print"><a class="logo" href="{{ route('transaction')}}">ICLC System </a>
         <nav class="navbar navbar-static-top">
           <!-- Sidebar toggle button--><a class="sidebar-toggle" href="#" data-toggle="offcanvas"></a>
           <!-- Navbar Right Menu-->
@@ -27,7 +27,6 @@
               <!-- User Menu-->
               <li class="dropdown"><a class="dropdown-toggle" href="#" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><i class="fa fa-user fa-lg"></i></a>
                 <ul class="dropdown-menu settings-menu">                  
-                  <li><a href="{{ route('edit')}}"><i class="fa fa-cog fa-lg"></i> Settings</a></li>
                   <li>
                     <a href="{{ route('logout') }}"
                          onclick="event.preventDefault();

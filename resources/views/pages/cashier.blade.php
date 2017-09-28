@@ -2,7 +2,6 @@
 
 @section('sidebar')
 <ul class="sidebar-menu">
-  <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
   <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
   <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">
@@ -35,7 +34,6 @@
           <li class="active"><a href="#">Cashier</a></li>
         </ul>
       </div>
-      <div><a class="btn btn-primary btn-flat" href="{{ route('add-student')}}"><i class="fa fa-lg fa-plus"></i></a><a class="btn btn-info btn-flat" href="{{ route('update-student')}}"><i class="fa fa-lg fa-refresh"></i></a><a class="btn btn-warning btn-flat" href="#"><i class="fa fa-lg fa-trash"></i></a></div>
     </div>
     <div class="row">
       <div class="col-md-12">

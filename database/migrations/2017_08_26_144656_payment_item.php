@@ -22,7 +22,7 @@ class PaymentItem extends Migration
             $table->foreign('item_id')->references('id')->on('item');
             $table->integer('quantity')->unsigned()->default(1);
             $table->string('size')->nullable();
-            $table->decimal('amount', 22, 15)->unsigned();
+            $table->decimal('amount', 9, 2)->unsigned();
         });
     }
 

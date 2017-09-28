@@ -27,7 +27,7 @@ class EditController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/transaction';
 
     /**
      * Create a new controller instance.

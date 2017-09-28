@@ -2,7 +2,6 @@
 
 @section('sidebar')
 <ul class="sidebar-menu">
-  <li><a href="{{ route('home')}}"><i class="fa fa-dashboard"></i><span>Dashboard</span></a></li>
   <li><a href="{{ route('transaction')}}"><i class="fa fa-calculator"></i><span>Transaction</span></a></li>
   <li class="treeview active"><a href="#"><i class="fa fa-th-list"></i><span>Record</span><i class="fa fa-angle-right"></i></a>
     <ul class="treeview-menu">

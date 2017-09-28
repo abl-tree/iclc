@@ -17,9 +17,10 @@ class Course_Controller extends Controller
      */
     public function __construct()
     {
+        $this->middleware('auth');
         $this->middleware(function ($request, $next) {
             $this->user = Auth::user();
-            if($this->user->role !== 'client'){
+            if($this->user->role !== 1){
                 return redirect('/unauthorized');
             }
             return $next($request);

@@ -58,25 +58,66 @@
                     <input type="checkbox" name="remember" {{ old('remember') ? 'checked' : ''}}><span class="label-text">Remember me</span>
                   </label>
                 </div>
-                <p class="semibold-text mb-0"><a id="toFlip" href="#">Forgot Password ?</a></p>
+                <p class="semibold-text mb-0"><a id="toFlip" href="#">New user ?</a></p>
               </div>
             </div>
             <div class="form-group btn-container">
               <button type="submit" class="btn btn-primary btn-block">SIGN IN <i class="fa fa-sign-in fa-lg"></i></button>
             </div>
           </form>
-          <form class="forget-form" action="index.html">
-            <h3 class="login-head"><i class="fa fa-lg fa-fw fa-lock"></i>Forgot Password ?</h3>
-            <div class="form-group">
-              <label class="control-label">EMAIL</label>
-              <input class="form-control" type="text" placeholder="Email">
-            </div>
-            <div class="form-group btn-container">
-              <button class="btn btn-primary btn-block">RESET <i class="fa fa-unlock fa-lg"></i></button>
-            </div>
-            <div class="form-group mt-20">
-              <p class="semibold-text mb-0"><a id="noFlip" href="#"><i class="fa fa-angle-left fa-fw"></i> Back to Login</a></p>
-            </div>
+          <form class="forget-form" role="form" method="POST" action="{{ route('register') }}">
+              {{ csrf_field() }}
+
+              <h3 class="login-head"><i class="fa fa-lg fa-fw fa-user"></i>REGISTER</h3>
+              <div class="form-group{{ $errors->has('first_name') ? ' has-error' : '' }}">
+                  <label for="first_name" class="control-label">First Name</label>
+                  <input id="first_name" type="text" class="form-control" name="first_name" value="{{ old('first_name') }}" required autofocus>
+              </div>
+
+              <div class="form-group{{ $errors->has('last_name') ? ' has-error' : '' }}">
+                  <label for="last_name" class="control-label">Last Name</label>
+                  <input id="last_name" type="text" class="form-control" name="last_name" value="{{ old('first_name') }}" required autofocus>
+              </div>
+
+              <div class="form-group{{ $errors->has('username') ? ' has-error' : '' }}">
+                  <label for="username" class="control-label">Username</label>
+                  <input id="username" type="text" class="form-control" name="username" value="{{ old('username') }}" required>
+              </div>
+
+              <div class="form-group{{ $errors->has('position') ? ' has-error' : '' }}">
+                  <label for="position" class="control-label">Position</label>
+                  <input id="position" type="text" class="form-control" name="position" value="{{ old('position') }}" required>
+
+                  @if ($errors->has('position'))
+                      <span class="help-block">
+                          <strong>{{ $errors->first('position') }}</strong>
+                      </span>
+                  @endif
+              </div>
+
+              <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                  <label for="password" class="control-label">Password</label>
+                  <input id="password" type="password" class="form-control" name="password" value="{{ old('password') }}" required>
+              </div>
+
+              <div class="form-group{{ $errors->has('password') ? ' has-error' : '' }}">
+                  <label for="password-confirm" class="control-label">Confirm Password</label>
+                  <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required>
+
+                  @if ($errors->has('password'))
+                      <span class="help-block">
+                          <strong>{{ $errors->first('password') }}</strong>
+                      </span>
+                  @endif
+              </div>
+              <div class="form-group btn-container">
+                      <button type="submit" class="btn btn-primary btn-block">
+                          Register
+                      </button>
+                      <div class="form-group mt-20">
+                          <p class="semibold-text mb-0"><a id="noFlip" href="#"><i class="fa fa-angle-left fa-fw"></i> Back to Login</a></p>
+                      </div>
+              </div>
           </form>
       </div>
     </section>
