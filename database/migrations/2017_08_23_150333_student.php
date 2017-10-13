@@ -21,7 +21,7 @@ class Student extends Migration
             $table->string('gender')->nullable();
             $table->integer('year');
             $table->integer('course_id')->unsigned();
-            $table->foreign('course_id')->references('id')->on('course');
+            $table->foreign('course_id')->references('id')->on('course')->onDelete('cascade');;
         });
     }
 

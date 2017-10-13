@@ -27,7 +27,7 @@
   <div class="content-wrapper">
     <div class="page-title">
       <div>
-        <h1>Student Records</h1>
+        <h1>Student</h1>
         <ul class="breadcrumb side">
           <li><i class="fa fa-home fa-lg"></i></li>
           <li>Records</li>
@@ -37,13 +37,14 @@
       <div class="btn-group">
         <form class="btn-group" id="upload" method="post" enctype="multipart/form-data">
           {{ csrf_field() }}
-            <label rel="tooltip" data-toggle="tooltip" class="btn btn-default btn-upload" title="Upload excel file">
+            <label rel="tooltip" data-toggle="tooltip" class="btn btn-warning btn-upload" title="Upload excel file">
               <input type="file" class="sr-only" name="excel" accept="application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet">
               <span>
                 <span id="upload_icon" class="fa fa-upload"></span>
               </span>
             </label>
         </form>
+        <a type="button" class="btn btn-default btn-flat" href="{{ asset('templates/iclc_template.xlsx') }}" rel="tooltip" data-toggle="tooltip" title="Template"><i class="fa fa-lg fa-file-excel-o"></i></a>
         <a type="submit" data-toggle="modal" data-target="#add_student" class="btn btn-primary btn-flat" rel="tooltip" data-toggle="tooltip" title="Add student"><i class="fa fa-lg fa-plus"></i></a>
         <a id="delete-selected-row" class="btn btn-danger btn-flat disabled" rel="tooltip" data-toggle="tooltip" title="Delete selected rows"><i class="fa fa-lg fa-trash-o"></i></a>
         <a type="submit" data-toggle="modal" data-target=".update_student" rel="tooltip" data-toggle="tooltip" title="Update selected row" id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
@@ -455,21 +456,19 @@ $(document).ready(function(){
             });
           },  
           error: function(e) {
-            console.log("----------" + e);
+            console.log(e);
           }
     });
   });
 
 $('#update-student-form').submit(function(e){
     e.preventDefault();
-    console.log($(this).serialize());
 
     $.ajax({
           type: "POST",
           url: "/student/update",
           data: $(this).serialize(),
-          success: function(data){   
-            console.log(data);
+          success: function(data){
             table.ajax.reload();
             swal({
               title:"Updated!", 
@@ -478,30 +477,7 @@ $('#update-student-form').submit(function(e){
             });
           },  
           error: function(e) {
-            console.log("----------" + e);
-          }
-    });
-  });
-
-$('#delete-student-form').submit(function(e){
-    e.preventDefault();
-    $.ajax({
-          type: "POST",
-          url: "/students/delete",
-          data: $(this).serialize(),
-          success: function(data){   
-            console.log(data);
-            swal({
-            title:"Deleted!", 
-            text:"Student has been deleted to the database.", 
-            type:"success"},
-            function(){
-                $('#delete_student').modal("hide");
-                $('#dynamic').load("/student");
-            });
-          },  
-          error: function(e) {
-            console.log("----------" + e);
+            console.log(e);
           }
     });
   });
@@ -515,7 +491,6 @@ $('#delete-student-form').submit(function(e){
           data: $(this).serialize(),
           dataType: 'json',
           success: function(data){
-            console.log(data.name);
             if(data)
             $('<option>')
                 .text(data.name)
@@ -531,7 +506,7 @@ $('#delete-student-form').submit(function(e){
             });
           },  
           error: function(e) {
-            console.log("----------" + e);
+            console.log(e);
           }
     });
   });

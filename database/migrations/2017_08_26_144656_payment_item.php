@@ -17,9 +17,9 @@ class PaymentItem extends Migration
         Schema::create('payment_item', function(Blueprint $table){
             $table->increments('id'); 
             $table->integer('payment_id')->unsigned();
-            $table->foreign('payment_id')->references('id')->on('payment');
+            $table->foreign('payment_id')->references('id')->on('payment')->onDelete('cascade');;
             $table->integer('item_id')->unsigned();
-            $table->foreign('item_id')->references('id')->on('item');
+            $table->foreign('item_id')->references('id')->on('item')->onDelete('cascade');;
             $table->integer('quantity')->unsigned()->default(1);
             $table->string('size')->nullable();
             $table->decimal('amount', 9, 2)->unsigned();

@@ -27,7 +27,7 @@
   <div class="content-wrapper">
     <div class="page-title">
       <div>
-        <h1>Item Records</h1>
+        <h1>Item</h1>
         <ul class="breadcrumb side">
           <li><i class="fa fa-home fa-lg"></i></li>
           <li>Records</li>

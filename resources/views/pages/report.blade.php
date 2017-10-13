@@ -33,15 +33,11 @@
   <div class="content-wrapper">
    <div class="page-title">
       <div>
-        <h1>Student Records</h1>
+        <h1>By Receipt</h1>
         <ul class="breadcrumb side">
           <li><i class="fa fa-home fa-lg"></i></li>
           <li><a href="#">Reports</a></li>
         </ul>
-      </div>
-      <div>
-        <a id="delete-selected-row" class="btn btn-primary btn-flat disabled"><i class="fa fa-lg fa-trash-o"></i></a>
-        <a id="update-selected-row" class="btn btn-info btn-flat disabled"><i class="fa fa-lg fa-edit"></i></a>
       </div>
     </div>
       <div class="row">

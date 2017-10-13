@@ -18,14 +18,14 @@ class Payment extends Migration
             $table->increments('id');
             $table->string('invoice_number');
             $table->integer('student_id')->unsigned();
-            $table->foreign('student_id')->references('id')->on('student');
+            $table->foreign('student_id')->references('id')->on('student')->onDelete('cascade');;
             $table->decimal('total_amount', 9, 2)->unsigned();
             $table->integer('cashier_id')->unsigned();
-            $table->foreign('cashier_id')->references('user_id')->on('cashier_profile');
+            $table->foreign('cashier_id')->references('user_id')->on('cashier_profile')->onDelete('cascade');;
             $table->integer('sy_id')->unsigned();
-            $table->foreign('sy_id')->references('id')->on('school_year');
+            $table->foreign('sy_id')->references('id')->on('school_year')->onDelete('cascade');;
             $table->integer('semester_id')->unsigned();
-            $table->foreign('semester_id')->references('id')->on('semester');
+            $table->foreign('semester_id')->references('id')->on('semester')->onDelete('cascade');;
             $table->timestamp('created_date');
         });
     }
